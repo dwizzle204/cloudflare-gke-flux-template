@@ -4,5 +4,6 @@ terraform.tfstate
 terraform.tfstate.*
 *.tfvars
 *.tfplan
+tfplan
 .worktrees/
 .DS_Store
