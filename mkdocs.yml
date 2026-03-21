@@ -2,6 +2,11 @@ site_name: Cloudflare GKE Flux Template
 docs_dir: docs
 site_description: Technical how-to documentation for the Cloudflare + GKE + Flux multi-cluster gateway template
 
+exclude_docs: |
+  how-to-modernize-this-repo.md
+  repo-enhancement-roadmap.md
+  superpowers/plans/**
+
 nav:
   - Home: index.md
   - Getting Started:
