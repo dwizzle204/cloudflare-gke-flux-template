@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
+  timeout: 1m
   ref:
     branch: main
   url: https://github.com/REPLACE_ME/REPLACE_ME
@@ -17,9 +18,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  retryInterval: 1m
+  timeout: 3m
   prune: true
   wait: true
   sourceRef:
     kind: GitRepository
     name: platform-repo
-  path: ./flux/apps/sample-app/overlays/cluster-b
+  path: ./gitops/apps/sample-app/overlays/cluster-a

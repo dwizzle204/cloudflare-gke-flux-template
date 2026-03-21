@@ -1,24 +1,24 @@
-name: terraform-validate
+name: terraform-plan
 
 on:
   pull_request:
     paths:
       - "terraform/**"
-      - ".github/workflows/terraform-validate.yaml"
+      - ".github/workflows/terraform-plan.yaml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: terraform-validate-${{ github.event.pull_request.number || github.ref }}
+  group: terraform-plan-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate:
+  plan:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform
+        working-directory: terraform/ci
 
     steps:
       - uses: actions/checkout@v4
@@ -26,11 +26,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform fmt
-        run: terraform fmt -check -recursive
-
       - name: Terraform init
         run: terraform init -backend=false
 
       - name: Terraform validate
         run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars

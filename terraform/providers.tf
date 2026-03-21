@@ -45,21 +45,3 @@ provider "flux" {
     }
   }
 }
-
-provider "flux" {
-  alias = "cluster_b"
-
-  kubernetes = {
-    host                   = "https://${module.cluster_b.endpoint}"
-    token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(module.cluster_b.ca_certificate)
-  }
-
-  git = {
-    url = "https://github.com/${var.git_repository_owner}/${var.git_repository_name}.git"
-    http = {
-      username = "git"
-      password = var.github_token
-    }
-  }
-}

@@ -142,9 +142,9 @@ cd terraform && terraform fmt -check -recursive
 cd terraform && terraform init -upgrade -backend=false && terraform validate
 cd terraform/ci && terraform init -upgrade -backend=false && terraform validate
 cd tests/terratest && go test -v ./... -count=1 -timeout 30m
-/home/dm/.local/bin/kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
-/home/dm/.local/bin/kustomize build flux/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
-/home/dm/.local/bin/kustomize build flux/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
+/home/dm/.local/bin/kustomize build gitops/infrastructure/gateway > /tmp/gateway.yaml
+/home/dm/.local/bin/kustomize build gitops/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
+/home/dm/.local/bin/kustomize build gitops/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
 ```
 
 ## When To Use Real Infrastructure

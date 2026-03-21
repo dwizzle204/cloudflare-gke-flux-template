@@ -23,10 +23,12 @@ func TestPinnedModuleAndProviderVersions(t *testing.T) {
 	assert.Contains(t, networking, "version = \"16.1.0\"")
 	assert.Contains(t, networking, "version = \"8.3.0\"")
 	assert.Contains(t, gke, "version = \"44.0.0\"")
+	assert.Contains(t, gke, "regional = true")
 	assert.Contains(t, versions, "version = \">= 7.17, < 8.0\"")
 	assert.Contains(t, ciVersions, "version = \">= 7.17, < 8.0\"")
 	assert.Contains(t, gke, "gateway_api_channel = \"CHANNEL_STANDARD\"")
 	assert.Contains(t, gke, "fleet_project       = var.project_id")
+	assert.Contains(t, readFile(t, filepath.Join(testenv.TerraformRoot(), "cloudflare.tf")), "cloudflare_authenticated_origin_pulls_settings")
 }
 
 func readFile(t *testing.T, path string) string {
