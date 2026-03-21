@@ -8,6 +8,8 @@ tfplan
 .worktrees/
 .DS_Store
 site/
+docs/superpowers/
+.opencode/
 
 !terraform/.terraform.lock.hcl
 !terraform/ci/.terraform.lock.hcl
