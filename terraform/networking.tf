@@ -49,12 +49,12 @@ module "vpc" {
 
 module "router_a" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "6.2.0"
+  version = "8.3.0"
 
-  name    = "${var.cluster_a_name}-router"
-  project = var.project_id
-  region  = var.region_a
-  network = module.vpc.network_self_link
+  name       = "${var.cluster_a_name}-router"
+  project_id = var.project_id
+  region     = var.region_a
+  network    = module.vpc.network_self_link
 
   nats = [
     {
@@ -67,12 +67,12 @@ module "router_a" {
 
 module "router_b" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "6.2.0"
+  version = "8.3.0"
 
-  name    = "${var.cluster_b_name}-router"
-  project = var.project_id
-  region  = var.region_b
-  network = module.vpc.network_self_link
+  name       = "${var.cluster_b_name}-router"
+  project_id = var.project_id
+  region     = var.region_b
+  network    = module.vpc.network_self_link
 
   nats = [
     {

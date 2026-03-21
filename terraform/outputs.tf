@@ -1,13 +1,13 @@
 output "cluster_a_name" {
-  value = google_container_cluster.cluster_a.name
+  value = module.cluster_a.name
 }
 
 output "cluster_b_name" {
-  value = google_container_cluster.cluster_b.name
+  value = module.cluster_b.name
 }
 
 output "config_cluster_name" {
-  value = google_container_cluster.cluster_a.name
+  value = module.cluster_a.name
 }
 
 output "gateway_static_ip" {
