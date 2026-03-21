@@ -16,6 +16,7 @@ func TestPinnedModuleAndProviderVersions(t *testing.T) {
 	rootMain := readFile(t, filepath.Join(testenv.TerraformRoot(), "main.tf"))
 	networking := readFile(t, filepath.Join(testenv.TerraformRoot(), "networking.tf"))
 	gke := readFile(t, filepath.Join(testenv.TerraformRoot(), "gke.tf"))
+	flux := readFile(t, filepath.Join(testenv.TerraformRoot(), "flux.tf"))
 	versions := readFile(t, filepath.Join(testenv.TerraformRoot(), "versions.tf"))
 	ciVersions := readFile(t, filepath.Join(testenv.TerraformCIRoot(), "versions.tf"))
 
@@ -29,6 +30,10 @@ func TestPinnedModuleAndProviderVersions(t *testing.T) {
 	assert.Contains(t, gke, "gateway_api_channel = \"CHANNEL_STANDARD\"")
 	assert.Contains(t, gke, "fleet_project       = var.project_id")
 	assert.Contains(t, readFile(t, filepath.Join(testenv.TerraformRoot(), "cloudflare.tf")), "cloudflare_authenticated_origin_pulls_settings")
+	assert.Contains(t, versions, "source  = \"hashicorp/helm\"")
+	assert.Contains(t, flux, "kind       = \"FluxInstance\"")
+	assert.Contains(t, flux, "path       = \"gitops/clusters/cluster-a\"")
+	assert.Contains(t, flux, "path       = \"gitops/clusters/cluster-b\"")
 }
 
 func readFile(t *testing.T, path string) string {
