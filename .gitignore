@@ -7,6 +7,7 @@ terraform.tfstate.*
 tfplan
 .worktrees/
 .DS_Store
+site/
 
 !terraform/.terraform.lock.hcl
 !terraform/ci/.terraform.lock.hcl

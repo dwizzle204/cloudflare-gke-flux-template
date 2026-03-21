@@ -1,4 +1,4 @@
-# How it works
+# How It Works
 
 ## 1. Terraform creates the platform
 
@@ -6,17 +6,18 @@ Terraform provisions:
 
 - VPC and two subnets
 - Cloud NAT
-- two GKE clusters
+- two regional GKE clusters
 - fleet membership
 - Multi-Cluster Services feature
 - fleet ingress feature with Cluster A as the config cluster
 - one global static IP for the external Gateway
 - a Cloudflare proxied DNS record
-- Flux bootstrap for Cluster A and Cluster B
+- Flux Operator on both clusters
+- one FluxInstance per cluster
 
 ## 2. Flux takes over Kubernetes resources
 
-After bootstrap, Flux reconciles the manifests under `gitops/clusters/*`.
+After bootstrap, each FluxInstance reconciles its cluster-specific path under `gitops/clusters/*`.
 
 ### Cluster A syncs
 - namespace

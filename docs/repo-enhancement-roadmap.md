@@ -1,6 +1,8 @@
 # Repo Enhancement Roadmap
 
-This repository now includes a CI-safe Terratest foundation, and the modernization path is intentionally staged so contributors can learn the order as well as the mechanics.
+> Internal reference. This page explains how the repository evolved. Do not use it as the first-run guide for the template.
+
+This repository now includes a CI-safe Terratest foundation, and this page records the staged improvement path that led to the current template shape.
 
 Start with `docs/how-to-modernize-this-repo.md` for the recommended sequence and rationale.
 

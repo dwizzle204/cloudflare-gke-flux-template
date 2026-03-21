@@ -1,6 +1,8 @@
 # GitOps Structure
 
-The `gitops/` tree is split by cluster role and shared infrastructure.
+This template splits GitOps by cluster responsibility.
+
+## Directory layout
 
 ```text
 gitops/
@@ -14,57 +16,45 @@ gitops/
 
 Cluster A is the config cluster.
 
-It reconciles:
+It syncs:
 
-- sample app overlay for Cluster A
-- multi-cluster Gateway Kustomization
+- the Cluster A app overlay
+- the multi-cluster Gateway Kustomization
+
+Cluster A is the only cluster that should own:
+
+- `Gateway`
+- `HTTPRoute`
+- gateway-related infrastructure manifests
 
 ## Cluster B
 
 Cluster B is workload-only.
 
-It reconciles:
+It syncs:
 
-- sample app overlay for Cluster B
+- the Cluster B app overlay
 
-## Shared infrastructure
+It does not own Gateway resources.
 
-`gitops/infrastructure/gateway` contains the external multi-cluster Gateway resources that must exist only on Cluster A.
-
-## Bootstrap model
+## Flux bootstrap model
 
 Both clusters run Flux through Flux Operator.
 
-- Cluster A FluxInstance syncs `gitops/clusters/cluster-a`
-- Cluster B FluxInstance syncs `gitops/clusters/cluster-b`
+Each cluster has:
 
-This keeps Flux installation declarative on both clusters while preserving the asymmetric Gateway ownership model.
+- one `FluxInstance` named `flux`
+- namespace `flux-system`
+- Git source pointing at this repository
 
-## How FluxInstance maps to this repo
+The only difference is the sync path:
 
-Each cluster has the same operator-managed control plane shape:
+- Cluster A -> `gitops/clusters/cluster-a`
+- Cluster B -> `gitops/clusters/cluster-b`
 
-- `FluxInstance` name: `flux`
-- namespace: `flux-system`
-- source kind: `GitRepository`
-- source URL: this repository
-- source ref: the configured Git branch
+## Why this split matters
 
-Only the sync path changes between clusters.
-
-### Cluster A syncs
-
-- `gitops/clusters/cluster-a`
-- This path includes the app overlay Kustomization for Cluster A
-- This path also includes the multi-cluster Gateway Kustomization
-
-### Cluster B syncs
-
-- `gitops/clusters/cluster-b`
-- This path includes only the app overlay Kustomization for Cluster B
-- It does not include Gateway resources
-
-This is the key best-practice split in the template:
-
-- Flux installation is symmetric
-- Gateway ownership is asymmetric
+- Flux installation is symmetric on both clusters
+- Gateway ownership stays asymmetric
+- service exports exist in both clusters
+- the external ingress path stays consistent with the template architecture

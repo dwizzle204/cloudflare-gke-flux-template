@@ -1,4 +1,6 @@
-# Variable Definitions
+# Variables
+
+Use `terraform/terraform.tfvars.example` as the starting point.
 
 ## GCP
 
@@ -20,6 +22,10 @@
 - `node_count`: default node count per cluster
 - `cluster_release_channel`: GKE release channel
 - `gateway_static_ip_name`: reserved global static IP name
+- `gateway_dns_authorization_name`: Certificate Manager DNS authorization name
+- `gateway_certificate_name`: Certificate Manager certificate name
+- `gateway_certificate_map_name`: Certificate Manager certificate map name
+- `gateway_certificate_map_entry_name`: Certificate Manager certificate map entry name
 
 ## Cloudflare
 
@@ -27,15 +33,15 @@
 - `cloudflare_zone_name`: Cloudflare zone name
 - `cloudflare_hostname`: proxied public hostname managed by Cloudflare DNS
 
-## Git / Flux
+## Git and Flux
 
 - `git_repository_owner`: GitHub owner or organization
 - `git_repository_name`: GitHub repository name
 - `git_branch`: Git branch for Flux reconciliation
 - `github_token`: token used to create the Flux sync secret on both clusters
 
-See `docs/template-customization.md` for the full replacement checklist and placeholder rendering flow.
-
 ## Gateway
 
 - `gateway_hostname`: hostname configured on the Gateway and HTTPRoute
+
+Use `template-customization.md` for the replacement checklist and the placeholder rendering flow.
