@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+SKIP_DIRS = {".git", ".terraform", ".worktrees", "site"}
 
 EXPECTED = {
     Path("gitops/infrastructure/gateway/gateway.yaml"): [
@@ -28,6 +29,8 @@ found = []
 unexpected = []
 
 for path in ROOT.rglob("*.yaml"):
+    if any(part in SKIP_DIRS for part in path.parts):
+        continue
     rel = path.relative_to(ROOT)
     text = path.read_text(encoding="utf-8")
     for token in [
