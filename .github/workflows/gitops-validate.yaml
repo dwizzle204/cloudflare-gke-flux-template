@@ -19,25 +19,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           persist-credentials: false
 
       - name: Install kustomize
         run: |
           curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz -o /tmp/kustomize.tar.gz
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.8.1/checksums.txt -o /tmp/kustomize_checksums.txt
+          grep 'kustomize_v5.8.1_linux_amd64.tar.gz' /tmp/kustomize_checksums.txt | sha256sum -c -
           tar -xzf /tmp/kustomize.tar.gz -C /tmp
           sudo mv /tmp/kustomize /usr/local/bin/kustomize
 
       - name: Install Flux CLI
         run: |
           curl -sSL https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_linux_amd64.tar.gz -o /tmp/flux.tar.gz
+          curl -sSL https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_checksums.txt -o /tmp/flux_checksums.txt
+          grep 'flux_2.8.3_linux_amd64.tar.gz' /tmp/flux_checksums.txt | sha256sum -c -
           tar -xzf /tmp/flux.tar.gz -C /tmp flux
           sudo mv /tmp/flux /usr/local/bin/flux
 
       - name: Install kubectl
         run: |
           curl -sSL https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl -o /tmp/kubectl
+          curl -sSL https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl.sha256 -o /tmp/kubectl.sha256
+          echo "$(cat /tmp/kubectl.sha256)  /tmp/kubectl" | sha256sum -c -
           chmod +x /tmp/kubectl
           sudo mv /tmp/kubectl /usr/local/bin/kubectl
 
