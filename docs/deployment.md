@@ -23,23 +23,23 @@ terraform plan
 terraform apply
 ```
 
-Terraform provisions GCP infrastructure, Cloudflare edge resources, and bootstraps Flux on Cluster A only.
+Terraform provisions GCP infrastructure, Cloudflare edge resources, installs Flux Operator on both clusters, and creates one FluxInstance per cluster.
 
-## Step 3: Bootstrap Cluster B Flux
+## Step 3: Verify Flux Operator bootstrap
 
-After Terraform completes, bootstrap Flux on Cluster B using the same repository and the `gitops/clusters/cluster-b` path.
+After Terraform completes, confirm that both clusters have a `flux` FluxInstance in the `flux-system` namespace.
 
 Example:
 
 ```bash
-flux bootstrap github \
-  --owner=<git_repository_owner> \
-  --repository=<git_repository_name> \
-  --branch=<git_branch> \
-  --path=gitops/clusters/cluster-b
+kubectl --context <cluster-a-context> -n flux-system get fluxinstance flux
+kubectl --context <cluster-b-context> -n flux-system get fluxinstance flux
 ```
 
-This keeps Terraform responsible for bootstrap on Cluster A only while still allowing Flux to manage Cluster B workloads.
+Both FluxInstance resources should sync the cluster-specific Git paths declaratively:
+
+- Cluster A -> `gitops/clusters/cluster-a`
+- Cluster B -> `gitops/clusters/cluster-b`
 
 ## Step 4: Verify GitOps reconciliation
 

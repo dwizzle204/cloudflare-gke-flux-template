@@ -17,14 +17,14 @@ terraform {
       version = "~> 5.0"
     }
 
-    flux = {
-      source  = "fluxcd/flux"
-      version = "~> 1.4"
-    }
-
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "~> 2.32"
+    }
+
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.15"
     }
   }
 }

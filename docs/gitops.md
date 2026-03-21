@@ -30,3 +30,12 @@ It reconciles:
 ## Shared infrastructure
 
 `gitops/infrastructure/gateway` contains the external multi-cluster Gateway resources that must exist only on Cluster A.
+
+## Bootstrap model
+
+Both clusters run Flux through Flux Operator.
+
+- Cluster A FluxInstance syncs `gitops/clusters/cluster-a`
+- Cluster B FluxInstance syncs `gitops/clusters/cluster-b`
+
+This keeps Flux installation declarative on both clusters while preserving the asymmetric Gateway ownership model.
