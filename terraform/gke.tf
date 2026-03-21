@@ -2,8 +2,8 @@ resource "google_container_cluster" "cluster_a" {
   provider                 = google-beta
   name                     = var.cluster_a_name
   location                 = var.zone_a
-  network                  = google_compute_network.this.id
-  subnetwork               = google_compute_subnetwork.cluster_a.name
+  network                  = module.vpc.network_self_link
+  subnetwork               = module.vpc.subnets["${var.region_a}/${var.subnet_name_a}"].name
   remove_default_node_pool = true
   initial_node_count       = 1
   deletion_protection      = false
@@ -31,7 +31,7 @@ resource "google_container_cluster" "cluster_a" {
     project = var.project_id
   }
 
-  depends_on = [google_project_service.required]
+  depends_on = [module.project_services]
 }
 
 resource "google_container_node_pool" "cluster_a" {
@@ -50,8 +50,8 @@ resource "google_container_cluster" "cluster_b" {
   provider                 = google-beta
   name                     = var.cluster_b_name
   location                 = var.zone_b
-  network                  = google_compute_network.this.id
-  subnetwork               = google_compute_subnetwork.cluster_b.name
+  network                  = module.vpc.network_self_link
+  subnetwork               = module.vpc.subnets["${var.region_b}/${var.subnet_name_b}"].name
   remove_default_node_pool = true
   initial_node_count       = 1
   deletion_protection      = false
@@ -79,7 +79,7 @@ resource "google_container_cluster" "cluster_b" {
     project = var.project_id
   }
 
-  depends_on = [google_project_service.required]
+  depends_on = [module.project_services]
 }
 
 resource "google_container_node_pool" "cluster_b" {

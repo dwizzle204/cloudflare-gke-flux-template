@@ -1,0 +1,32 @@
+name: terratest
+
+on:
+  pull_request:
+    paths:
+      - "tests/terratest/**"
+      - "terraform/ci/**"
+      - "terraform/modules/core/**"
+      - ".github/workflows/terratest.yaml"
+
+jobs:
+  terratest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tests/terratest/go.mod
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Download Go modules
+        run: go mod tidy
+        working-directory: tests/terratest
+
+      - name: Run Terratest suite
+        run: go test -v ./... -count=1 -timeout 30m
+        working-directory: tests/terratest

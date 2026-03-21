@@ -3,7 +3,7 @@ resource "google_gke_hub_feature" "mcs" {
   name     = "multiclusterservicediscovery"
   location = "global"
 
-  depends_on = [google_project_service.required]
+  depends_on = [module.project_services]
 }
 
 resource "google_project_iam_member" "mcs_network_viewer" {
