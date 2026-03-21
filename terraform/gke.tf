@@ -9,8 +9,8 @@ module "cluster_a" {
   project_id = var.project_id
   name       = var.cluster_a_name
 
-  regional = false
-  zones    = [var.zone_a]
+  regional = true
+  region   = var.region_a
 
   network    = module.vpc.network_name
   subnetwork = module.vpc.subnets["${var.region_a}/${var.subnet_name_a}"].name
@@ -54,8 +54,8 @@ module "cluster_b" {
   project_id = var.project_id
   name       = var.cluster_b_name
 
-  regional = false
-  zones    = [var.zone_b]
+  regional = true
+  region   = var.region_b
 
   network    = module.vpc.network_name
   subnetwork = module.vpc.subnets["${var.region_b}/${var.subnet_name_b}"].name

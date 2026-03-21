@@ -1,45 +1,47 @@
 # Architecture
 
-## High-level flow
+This template implements a fixed ingress model.
 
 ```text
 Internet
-  -> Cloudflare proxied DNS
-  -> GCP global external Application Load Balancer (via multi-cluster Gateway)
-  -> Cluster A + Cluster B backends
+  -> Cloudflare
+  -> Cloudflare Authenticated Origin Pulls
+  -> GCP Global External HTTP(S) Load Balancer
+  -> GKE Multi-Cluster Gateway (external only)
+  -> Services in Cluster A and Cluster B
 ```
 
-## Cluster roles
+## Traffic Rules
 
-### Cluster A
-- workload cluster
-- fleet member
-- config cluster for fleet ingress / multi-cluster Gateway
-- Flux bootstrap target
+- Cloudflare is the only supported public endpoint.
+- The GCP global external load balancer exists behind Cloudflare.
+- Gateway resources exist only on Cluster A.
+- Services are exported from both clusters through MCS.
+- HTTPRoute targets the `ServiceImport` created from those `ServiceExport` resources.
 
-### Cluster B
-- workload cluster
-- fleet member
-- Flux bootstrap target
+## Platform Responsibilities
 
-## Why this split works
+### Cloudflare
 
-Google's multi-cluster Gateway model requires a **config cluster** where `Gateway`, `HTTPRoute`, and related policy objects are applied. The multi-cluster Gateway controller is Google-hosted and uses MCS to discover exported services across the fleet.
+- public DNS
+- WAF and edge termination
+- Authenticated Origin Pulls enabled at the zone
 
-References:
-- https://docs.cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-gateways
-- https://docs.cloud.google.com/kubernetes-engine/docs/how-to/prepare-environment-multi-cluster-gateways
+### GCP
 
-## DNS model
+- VPC, subnets, NAT
+- global static IP
+- regional GKE clusters
+- Fleet, MCS, and multi-cluster ingress prerequisites
 
-The template reserves a global static IP in Terraform and injects that name into the Gateway manifest using a `NamedAddress`. Cloudflare creates a proxied DNS record pointing to that IP.
+### Flux
 
-Reference:
-- https://cloud.google.com/kubernetes-engine/docs/how-to/deploying-gateways
+- GitOps ownership of Kubernetes resources after bootstrap
+- Cluster A manages Gateway and HTTPRoute
+- both clusters run the sample app and `ServiceExport`
 
-## Flux model
+## Ownership Boundary
 
-Terraform bootstraps Flux to both clusters. Cluster A syncs the gateway objects and the sample app. Cluster B syncs only the sample app. That keeps the GitOps model simple and avoids remote-cluster reconciliation complexity.
-
-Reference:
-- https://v2-0.docs.fluxcd.io/flux/installation/
+- Terraform owns infrastructure and Flux bootstrap on Cluster A.
+- Flux owns Kubernetes manifests after bootstrap.
+- Cluster B is expected to be bootstrapped with the Flux CLI against the `gitops/clusters/cluster-b` path.

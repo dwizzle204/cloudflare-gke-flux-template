@@ -25,4 +25,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: platform-repo
-  path: ./flux/apps/sample-app/overlays/cluster-b
+  path: ./gitops/apps/sample-app/overlays/cluster-a

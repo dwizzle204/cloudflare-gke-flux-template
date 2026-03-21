@@ -16,7 +16,7 @@ Terraform provisions:
 
 ## 2. Flux takes over Kubernetes resources
 
-After bootstrap, Flux reconciles the manifests under `flux/clusters/*`.
+After bootstrap, Flux reconciles the manifests under `gitops/clusters/*`.
 
 ### Cluster A syncs
 - namespace

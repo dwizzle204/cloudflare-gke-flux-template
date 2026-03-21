@@ -1,4 +1,4 @@
-# Flux configuration
+# GitOps configuration
 
 This tree contains the GitOps-managed Kubernetes configuration.
 
@@ -12,6 +12,7 @@ This tree contains the GitOps-managed Kubernetes configuration.
 
 ### cluster-b
 - sample app only
+- no Gateway resources
 
 ## Why the Gateway only exists on cluster-a
 For multi-cluster Gateway, the `Gateway`, `HTTPRoute`, and policy resources are applied only to the **config cluster**.
@@ -19,6 +20,5 @@ For multi-cluster Gateway, the `Gateway`, `HTTPRoute`, and policy resources are 
 ## Why both clusters export the same Service
 The multi-cluster active-active pattern is simplest when both clusters export the same service name and namespace. MCS creates a `ServiceImport`, and the Gateway routes to that imported service.
 
-References:
-- https://docs.cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-services
-- https://docs.cloud.google.com/kubernetes-engine/docs/how-to/deploying-multi-cluster-gateways
+Cluster A is bootstrapped by Terraform.
+Cluster B is expected to be bootstrapped with the Flux CLI against `gitops/clusters/cluster-b`.

@@ -22,7 +22,7 @@ Prefer safe, reviewable changes that keep the repo usable as a teaching referenc
 .
 ├── .github/workflows/        # CI validation and Terratest workflows
 ├── docs/                     # Architecture and operations notes
-├── flux/                     # GitOps-managed Kubernetes manifests
+├── gitops/                   # GitOps-managed Kubernetes manifests
 ├── scripts/                  # Small repo utilities
 ├── terraform/                # Primary Terraform root
 │   ├── ci/                   # CI-safe Terraform root without Flux/Cloudflare
@@ -82,17 +82,17 @@ go test -v ./... -run TestTerraformPlanContract -count=1 -timeout 30m
 ### Flux / GitOps Validation
 
 ```bash
-kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
-kustomize build flux/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
-kustomize build flux/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
+kustomize build gitops/infrastructure/gateway > /tmp/gateway.yaml
+kustomize build gitops/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
+kustomize build gitops/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
 ```
 
 ### Run A Single Manifest Build
 
 ```bash
-kustomize build flux/infrastructure/gateway
-kustomize build flux/apps/sample-app/overlays/cluster-a
-kustomize build flux/apps/sample-app/overlays/cluster-b
+kustomize build gitops/infrastructure/gateway
+kustomize build gitops/apps/sample-app/overlays/cluster-a
+kustomize build gitops/apps/sample-app/overlays/cluster-b
 ```
 
 ### GitHub Actions
@@ -162,7 +162,7 @@ cd terraform && terraform fmt -check -recursive
 cd terraform && terraform init -backend=false && terraform validate
 cd terraform/ci && terraform init -backend=false && terraform validate
 cd tests/terratest && go test -v ./... -count=1 -timeout 30m
-kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
+kustomize build gitops/infrastructure/gateway > /tmp/gateway.yaml
 ```
 
 ## Known Constraints

@@ -1,191 +1,117 @@
-# GKE + Cloudflare + Flux Multi-Cluster Gateway Template
+# Cloudflare + GKE + Flux Multi-Cluster Gateway Template
 
-This repository is a reusable template for standing up:
-
-- a shared GCP VPC
-- two GKE clusters in two regions
-- fleet registration and Multi-Cluster Services (MCS)
-- a **config cluster** model where **Cluster A** is the multi-cluster Gateway config cluster
-- Flux bootstrap from Terraform
-- Flux-managed manifests that create a **global external multi-cluster Gateway**
-- a static global IP and a Cloudflare proxied DNS record pointing at that IP
-- a small sample application deployed into both clusters to validate the multi-cluster Gateway path
-
-The template contains **no company-specific naming, domains, or policies**. Everything environment-specific is provided through variables.
+This repository is a reusable, production-aligned template for deploying a two-cluster GKE platform with Cloudflare as the only public entry point.
 
 ## Architecture
 
-- **Terraform owns** cloud infrastructure, GKE clusters, fleet features, static IPs, Cloudflare DNS, and Flux bootstrap.
-- **Flux owns** Kubernetes objects after bootstrap, including:
-  - Gateway
-  - HTTPRoute
-  - Namespace
-  - sample app manifests
-  - ServiceExport objects
+```text
+Internet
+  -> Cloudflare (DNS, WAF, TLS termination)
+  -> Cloudflare Authenticated Origin Pulls
+  -> GCP Global External HTTP(S) Load Balancer
+  -> GKE Multi-Cluster Gateway (external only)
+  -> Services running in Cluster A and Cluster B
+```
 
-## Design choices
+## What This Template Provisions
 
-### Why two clusters instead of three?
-This template uses **two clusters total**:
+- Cloudflare proxied DNS for the public hostname
+- Cloudflare Authenticated Origin Pulls enabled at the zone
+- Shared GCP VPC, subnets, and Cloud NAT
+- Two regional GKE clusters
+  - Cluster A = workload + config cluster
+  - Cluster B = workload cluster
+- Fleet membership, Multi-Cluster Services, and multi-cluster Gateway prerequisites
+- Global static IP for the external load balancer
+- Flux bootstrap on Cluster A using Terraform
+- GitOps-managed Kubernetes resources under `gitops/`
 
-- `cluster-a` = workload cluster **and** config cluster
-- `cluster-b` = workload cluster
+## What This Template Does Not Do
 
-That keeps cost and operational overhead down while still supporting a multi-cluster Gateway.
+- No third cluster
+- No internal multi-cluster gateway
+- No alternate ingress controller such as NGINX or Istio
+- No Cloudflare tunnels
+- No Terraform-managed workloads after Flux bootstrap
 
-### Why Flux on both clusters?
-Flux is bootstrapped to both clusters:
-
-- Cluster A syncs:
-  - gateway objects
-  - sample app
-- Cluster B syncs:
-  - sample app only
-
-That avoids hub-spoke remote-apply complexity while still keeping Cluster A as the config cluster for the Google-hosted multi-cluster Gateway controller.
-
-## Repository layout
+## Repository Layout
 
 ```text
 .
 ├── .github/workflows/
 ├── docs/
-├── flux/
+├── gitops/
 │   ├── apps/
-│   │   └── sample-app/
-│   └── clusters/
-│       ├── cluster-a/
-│       └── cluster-b/
-└── terraform/
+│   ├── clusters/
+│   └── infrastructure/
+├── terraform/
+└── tests/terratest/
 ```
 
-## Prerequisites
+## Deployment Order
 
-You need:
+1. Prepare input values from `terraform/terraform.tfvars.example`.
+2. Apply Terraform in `terraform/` to provision GCP, Cloudflare, and Flux bootstrap on Cluster A.
+3. Allow Terraform to commit Cluster A Flux bootstrap manifests into `gitops/clusters/cluster-a/flux-system`.
+4. Bootstrap Flux on Cluster B with the Flux CLI, pointing it to `gitops/clusters/cluster-b`.
+5. Let Flux reconcile workloads on both clusters and Gateway resources on Cluster A only.
+6. Verify the Cloudflare hostname resolves through Cloudflare to the global external load balancer.
 
-- a GCP project
-- a Cloudflare zone already onboarded to Cloudflare
-- a private GitHub repository you control
-- Terraform/OpenTofu
-- `gcloud`
-- `kubectl`
+## Cluster Responsibilities
 
-You also need credentials for:
+### Cluster A
 
-- Google Cloud
-- Cloudflare API token
-- GitHub PAT with repo write access for Flux bootstrap
+- workload cluster
+- config cluster for multi-cluster Gateway
+- Gateway and HTTPRoute resources
+- sample workload and ServiceExport
 
-## Supported platform notes
+### Cluster B
 
-This template is designed around currently documented GKE multi-cluster Gateway prerequisites and Flux bootstrap patterns.
+- workload cluster only
+- sample workload and ServiceExport
+- no Gateway resources
 
-Key references:
-- GKE multi-cluster Gateway prep: https://docs.cloud.google.com/kubernetes-engine/docs/how-to/prepare-environment-multi-cluster-gateways
-- GKE multi-cluster Gateway deployment: https://docs.cloud.google.com/kubernetes-engine/docs/how-to/deploying-multi-cluster-gateways
-- GKE Gateway named static addresses: https://cloud.google.com/kubernetes-engine/docs/how-to/deploying-gateways
-- Flux bootstrap with Terraform: https://v2-0.docs.fluxcd.io/flux/installation/
-- Flux remote and workload identity docs: https://fluxcd.io/flux/components/kustomize/kustomizations/
-- Cloudflare Terraform docs: https://developers.cloudflare.com/terraform/tutorial/
+## Variables
 
-## Quick start
+See:
 
-1. Create a private GitHub repository.
-2. Copy this template into that repository.
-3. Fill in `terraform/terraform.tfvars.example` and save it as `terraform.tfvars` or inject values through your pipeline.
-4. Run Terraform from `terraform/`:
-   - `terraform init`
-   - `terraform plan`
-   - `terraform apply`
-5. Wait for Flux bootstrap to commit `flux-system` manifests into:
-   - `flux/clusters/cluster-a/flux-system`
-   - `flux/clusters/cluster-b/flux-system`
-6. Let Flux reconcile the sample application and the multi-cluster Gateway.
-7. Confirm:
-   - `ServiceExport` exists in both clusters
-   - `ServiceImport` is present on the config cluster
-   - the Gateway gets the reserved global IP
-   - the Cloudflare DNS name resolves to the Cloudflare proxied endpoint backed by the GCP global IP
+- `docs/variables.md`
+- `terraform/terraform.tfvars.example`
 
-## Apply sequence
+Required inputs include:
 
-### Terraform stage
-Terraform does the following:
+- GCP project and regions
+- Cloudflare zone name, hostname, and API token
+- GitHub repository owner/name and token
+- Gateway hostname
 
-- enables required Google APIs
-- creates the VPC and subnets
-- creates Cluster A and Cluster B
-- registers both clusters with the fleet
-- enables MCS
-- enables fleet ingress and sets Cluster A as the config cluster
-- reserves the global IP used by the external Gateway
-- bootstraps Flux to both clusters
-- creates the Cloudflare DNS record
+## Validation
 
-### Flux stage
-Flux then applies:
+```bash
+cd terraform
+terraform fmt -check -recursive
+terraform init -backend=false
+terraform validate
 
-- sample namespace
-- sample Deployment / Service / ServiceExport
-- Gateway
-- HTTPRoute
+cd terraform/ci
+terraform init -backend=false
+terraform validate
+terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
 
-The multi-cluster Gateway controller uses the config cluster plus MCS to discover backends across both clusters.
+cd tests/terratest
+go test -v ./... -count=1 -timeout 30m
 
-## Variables you must set
+flux migrate -f . --dry-run
+kustomize build gitops/infrastructure/gateway
+kustomize build gitops/apps/sample-app/overlays/cluster-a
+kustomize build gitops/apps/sample-app/overlays/cluster-b
+```
 
-Minimum required values:
+## Documentation
 
-- `project_id`
-- `region_a`
-- `region_b`
-- `zone_a`
-- `zone_b`
-- `cluster_a_name`
-- `cluster_b_name`
-- `cloudflare_api_token`
-- `cloudflare_zone_id`
-- `cloudflare_hostname`
-- `git_repository_owner`
-- `git_repository_name`
-- `git_branch`
-- `github_token`
-- `gateway_hostname`
-
-## Security notes
-
-This template intentionally keeps security controls generic:
-
-- Cloudflare DNS record is proxied
-- the Gateway uses a reserved static global IP
-- sample manifests are HTTP-only internally; you should add:
-  - HTTPS listeners
-  - Certificate Manager or Secret-backed certificates
-  - Cloud Armor / GCPGatewayPolicy
-  - Cloudflare AOP / origin auth
-  - optional client mTLS at the GCP ingress layer
-
-## CI/CD
-
-The `.github/workflows` directory includes examples for:
-
-- Terraform formatting and validation
-- GitOps manifest validation with `kustomize`
-
-The example workflows validate only. They do not auto-apply.
-
-## Known caveats
-
-- The bootstrap step requires the target GitHub repository to already exist.
-- Some fleet-related Terraform resources may require the `google-beta` provider even when the underlying GCP feature itself is GA. This is a provider-surface issue, not necessarily a product-preview issue.
-- This template keeps the sample application simple so you can validate the pattern before layering on product-specific software such as MuleSoft.
-
-## Next hardening steps
-
-After initial validation, add:
-
-- Certificate Manager or Secret-backed HTTPS
-- Cloudflare AOP and origin restrictions
-- Cloud Armor policies
-- SOPS or external secret management
-- workload identity annotations for Flux controllers if you want remote-cluster management or GCP-integrated controllers
+- `docs/architecture.md`
+- `docs/deployment.md`
+- `docs/variables.md`
+- `docs/gitops.md`
+- `docs/cloudflare.md`

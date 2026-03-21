@@ -24,9 +24,9 @@
 ### Task 2: Re-apply and verify Flux audit improvements
 
 **Files:**
-- Modify: `flux/clusters/cluster-a/apps-sample.yaml`
-- Modify: `flux/clusters/cluster-a/gateway.yaml`
-- Modify: `flux/clusters/cluster-b/apps-sample.yaml`
+- Modify: `gitops/clusters/cluster-a/apps-sample.yaml`
+- Modify: `gitops/clusters/cluster-a/gateway.yaml`
+- Modify: `gitops/clusters/cluster-b/apps-sample.yaml`
 
 - [ ] Re-apply the Flux timeout and retryInterval improvements in this worktree.
 - [ ] Run the installed Flux audit discovery and validation scripts.
@@ -57,7 +57,7 @@
 ### Task 5: Verify all changes
 
 **Files:**
-- Verify: `flux/**`
+- Verify: `gitops/**`
 - Verify: `.github/workflows/**`
 - Verify: `docs/gke-layout-review.md`
 
