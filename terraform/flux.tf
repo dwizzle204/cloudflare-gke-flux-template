@@ -14,7 +14,7 @@ resource "flux_bootstrap_git" "cluster_a" {
   ]
 
   depends_on = [
-    google_container_cluster.cluster_a,
+    module.cluster_a,
     google_gke_hub_feature.mcs,
     google_gke_hub_feature.ingress
   ]
@@ -36,7 +36,7 @@ resource "flux_bootstrap_git" "cluster_b" {
   ]
 
   depends_on = [
-    google_container_cluster.cluster_b,
+    module.cluster_b,
     google_gke_hub_feature.mcs
   ]
 }

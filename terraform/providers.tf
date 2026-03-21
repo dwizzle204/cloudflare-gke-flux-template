@@ -16,25 +16,25 @@ data "google_client_config" "default" {}
 
 provider "kubernetes" {
   alias                  = "cluster_a"
-  host                   = "https://${google_container_cluster.cluster_a.endpoint}"
+  host                   = "https://${module.cluster_a.endpoint}"
   token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(google_container_cluster.cluster_a.master_auth[0].cluster_ca_certificate)
+  cluster_ca_certificate = base64decode(module.cluster_a.ca_certificate)
 }
 
 provider "kubernetes" {
   alias                  = "cluster_b"
-  host                   = "https://${google_container_cluster.cluster_b.endpoint}"
+  host                   = "https://${module.cluster_b.endpoint}"
   token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(google_container_cluster.cluster_b.master_auth[0].cluster_ca_certificate)
+  cluster_ca_certificate = base64decode(module.cluster_b.ca_certificate)
 }
 
 provider "flux" {
   alias = "cluster_a"
 
   kubernetes = {
-    host                   = "https://${google_container_cluster.cluster_a.endpoint}"
+    host                   = "https://${module.cluster_a.endpoint}"
     token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(google_container_cluster.cluster_a.master_auth[0].cluster_ca_certificate)
+    cluster_ca_certificate = base64decode(module.cluster_a.ca_certificate)
   }
 
   git = {
@@ -50,9 +50,9 @@ provider "flux" {
   alias = "cluster_b"
 
   kubernetes = {
-    host                   = "https://${google_container_cluster.cluster_b.endpoint}"
+    host                   = "https://${module.cluster_b.endpoint}"
     token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(google_container_cluster.cluster_b.master_auth[0].cluster_ca_certificate)
+    cluster_ca_certificate = base64decode(module.cluster_b.ca_certificate)
   }
 
   git = {

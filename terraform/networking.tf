@@ -1,70 +1,86 @@
-resource "google_compute_network" "this" {
-  name                    = var.network_name
+module "vpc" {
+  source  = "terraform-google-modules/network/google"
+  version = "16.1.0"
+
+  project_id   = var.project_id
+  network_name = var.network_name
+
   auto_create_subnetworks = false
-}
+  routing_mode            = "GLOBAL"
 
-resource "google_compute_subnetwork" "cluster_a" {
-  name                     = var.subnet_name_a
-  ip_cidr_range            = var.subnet_cidr_a
-  region                   = var.region_a
-  network                  = google_compute_network.this.id
-  private_ip_google_access = true
+  subnets = [
+    {
+      subnet_name           = var.subnet_name_a
+      subnet_ip             = var.subnet_cidr_a
+      subnet_region         = var.region_a
+      subnet_private_access = "true"
+    },
+    {
+      subnet_name           = var.subnet_name_b
+      subnet_ip             = var.subnet_cidr_b
+      subnet_region         = var.region_b
+      subnet_private_access = "true"
+    }
+  ]
 
-  secondary_ip_range {
-    range_name    = "${var.subnet_name_a}-pods"
-    ip_cidr_range = var.pods_range_a
+  secondary_ranges = {
+    (var.subnet_name_a) = [
+      {
+        range_name    = "${var.subnet_name_a}-pods"
+        ip_cidr_range = var.pods_range_a
+      },
+      {
+        range_name    = "${var.subnet_name_a}-services"
+        ip_cidr_range = var.services_range_a
+      }
+    ]
+    (var.subnet_name_b) = [
+      {
+        range_name    = "${var.subnet_name_b}-pods"
+        ip_cidr_range = var.pods_range_b
+      },
+      {
+        range_name    = "${var.subnet_name_b}-services"
+        ip_cidr_range = var.services_range_b
+      }
+    ]
   }
-
-  secondary_ip_range {
-    range_name    = "${var.subnet_name_a}-services"
-    ip_cidr_range = var.services_range_a
-  }
 }
 
-resource "google_compute_subnetwork" "cluster_b" {
-  name                     = var.subnet_name_b
-  ip_cidr_range            = var.subnet_cidr_b
-  region                   = var.region_b
-  network                  = google_compute_network.this.id
-  private_ip_google_access = true
+module "router_a" {
+  source  = "terraform-google-modules/cloud-router/google"
+  version = "8.3.0"
 
-  secondary_ip_range {
-    range_name    = "${var.subnet_name_b}-pods"
-    ip_cidr_range = var.pods_range_b
-  }
+  name       = "${var.cluster_a_name}-router"
+  project_id = var.project_id
+  region     = var.region_a
+  network    = module.vpc.network_self_link
 
-  secondary_ip_range {
-    range_name    = "${var.subnet_name_b}-services"
-    ip_cidr_range = var.services_range_b
-  }
+  nats = [
+    {
+      name                               = "${var.cluster_a_name}-nat"
+      nat_ip_allocate_option             = "AUTO_ONLY"
+      source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    }
+  ]
 }
 
-resource "google_compute_router" "nat_a" {
-  name    = "${var.cluster_a_name}-router"
-  region  = var.region_a
-  network = google_compute_network.this.id
-}
+module "router_b" {
+  source  = "terraform-google-modules/cloud-router/google"
+  version = "8.3.0"
 
-resource "google_compute_router_nat" "nat_a" {
-  name                               = "${var.cluster_a_name}-nat"
-  router                             = google_compute_router.nat_a.name
-  region                             = var.region_a
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
-}
+  name       = "${var.cluster_b_name}-router"
+  project_id = var.project_id
+  region     = var.region_b
+  network    = module.vpc.network_self_link
 
-resource "google_compute_router" "nat_b" {
-  name    = "${var.cluster_b_name}-router"
-  region  = var.region_b
-  network = google_compute_network.this.id
-}
-
-resource "google_compute_router_nat" "nat_b" {
-  name                               = "${var.cluster_b_name}-nat"
-  router                             = google_compute_router.nat_b.name
-  region                             = var.region_b
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  nats = [
+    {
+      name                               = "${var.cluster_b_name}-nat"
+      nat_ip_allocate_option             = "AUTO_ONLY"
+      source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    }
+  ]
 }
 
 resource "google_compute_global_address" "gateway_ip" {

@@ -3,7 +3,7 @@ resource "google_gke_hub_feature" "mcs" {
   name     = "multiclusterservicediscovery"
   location = "global"
 
-  depends_on = [google_project_service.required]
+  depends_on = [module.project_services]
 }
 
 resource "google_project_iam_member" "mcs_network_viewer" {
@@ -19,12 +19,12 @@ resource "google_gke_hub_feature" "ingress" {
 
   spec {
     multiclusteringress {
-      config_membership = google_container_cluster.cluster_a.fleet[0].membership
+      config_membership = module.cluster_a.fleet_membership
     }
   }
 
   depends_on = [
-    google_container_cluster.cluster_a,
-    google_container_cluster.cluster_b
+    module.cluster_a,
+    module.cluster_b
   ]
 }

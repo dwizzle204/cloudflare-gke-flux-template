@@ -1,104 +1,172 @@
 # AGENTS.md
 
-## Build, Lint, Test Commands
+## Purpose
 
-### Terraform
-```bash
-cd terraform
-terraform init                      # Initialize provider and backend
-terraform fmt -check -recursive      # Check formatting
-terraform validate                    # Validate syntax
-terraform plan                        # Preview changes
-terraform apply                       # Apply changes
-terraform show                        # Show current state
-terraform destroy -auto-confirm       # Destroy infrastructure
+This repository is a learning template for multi-region GKE, fleet features, Flux GitOps, and Cloudflare-backed ingress.
+Prefer safe, reviewable changes that keep the repo usable as a teaching reference.
+
+## Agent Workflow
+
+- Use the globally installed Terraform skills on this server when they apply.
+- Start with `terraform-style-guide` for Terraform authoring and review.
+- Use `refactor-module` before extracting reusable Terraform modules.
+- Use `terraform-test` when creating or reviewing `.tftest.hcl` tests.
+- Use `terraform-stacks` only if introducing Terraform Stacks files.
+- Use `run-acceptance-tests` only for real acceptance tests that touch cloud resources.
+- Use the global `terratest-module-testing` agent for Go Terratest work, especially CI-safe tests, negative-path tests, staged tests, and workflow updates.
+- Prefer CI-safe validation and plan-based tests over `terraform apply`; this repo should not require real credentials for routine verification.
+
+## Repository Layout
+
+```text
+.
+├── .github/workflows/        # CI validation and Terratest workflows
+├── docs/                     # Architecture and operations notes
+├── flux/                     # GitOps-managed Kubernetes manifests
+├── scripts/                  # Small repo utilities
+├── terraform/                # Primary Terraform root
+│   ├── ci/                   # CI-safe Terraform root without Flux/Cloudflare
+│   └── modules/core/         # Core infra module for CI-safe plan testing
+└── tests/terratest/          # Go Terratest suite
 ```
 
-### Flux/GitOps
+## Build, Lint, and Test Commands
+
+### Terraform Root
+
 ```bash
-# Validate flux manifests
+cd terraform
+terraform fmt -check -recursive
+terraform init -backend=false
+terraform validate
+```
+
+### Terraform CI Wrapper
+
+Use the CI-safe root for plan-based checks that must not touch Flux, Cloudflare, or live clusters.
+
+```bash
+cd terraform/ci
+terraform init -backend=false
+terraform validate
+terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
+```
+
+### Single Terraform-Focused Verification
+
+```bash
+cd terraform
+terraform fmt terraform/modules/core
+
+cd terraform/ci
+terraform validate
+```
+
+### Terratest
+
+```bash
+cd tests/terratest
+go mod tidy
+go test -v ./... -count=1 -timeout 30m
+```
+
+### Run A Single Terratest
+
+```bash
+cd tests/terratest
+go test -v ./... -run TestTerraformFmt -count=1 -timeout 30m
+go test -v ./... -run TestTerraformValidate -count=1 -timeout 30m
+go test -v ./... -run TestTerraformPlanContract -count=1 -timeout 30m
+```
+
+### Flux / GitOps Validation
+
+```bash
 kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
 kustomize build flux/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
 kustomize build flux/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
-
-# Apply to clusters
-kubectl apply -f flux/infrastructure/gateway/
-kubectl apply -f flux/apps/sample-app/base/
 ```
 
-### GitHub Actions (CI/CD)
+### Run A Single Manifest Build
+
 ```bash
-# Run terraform validation (in CI)
-gh workflow run terraform-validate.yaml
-
-# Run gitops validation (in CI)
-gh workflow run gitops-validate.yaml
+kustomize build flux/infrastructure/gateway
+kustomize build flux/apps/sample-app/overlays/cluster-a
+kustomize build flux/apps/sample-app/overlays/cluster-b
 ```
 
-## Code Style Guidelines
+### GitHub Actions
 
-### Terraform Code Style
+```bash
+gh workflow run terraform-validate.yaml
+gh workflow run gitops-validate.yaml
+gh workflow run terratest.yaml
+```
 
-**Organization**
-- Group resources by logical domain: `providers.tf`, `variables.tf`, `main.tf`, `outputs.tf`, `versions.tf`
-- Use `locals` blocks for shared values and calculated expressions
-- Use `for_each` for multiple similar resources instead of `count`
-- Avoid `count = 0` for resources that should never be created
+## Terraform Design Guidance
 
-**Naming Conventions**
-- Resources: `snake_case`, e.g., `google_container_cluster.cluster_a`
-- Variables: `lowercase_snake_case`, e.g., `project_id`, `region_a`
-- Outputs: `uppercase_snake_case`, e.g., `cluster_a_endpoint`
-- Locals: `lowercase_snake_case`, e.g., `required_services`
-- Providers: Use `google` for GA APIs, `google-beta` for preview features
+- Prefer Google verified modules or well-maintained `terraform-google-modules/*` modules when they clearly improve reuse.
+- Pin module versions explicitly when using registry modules.
+- Keep simple integration edges as raw resources when modules do not add clarity, especially Fleet features, Flux bootstrap, and Cloudflare DNS.
+- Favor a layered structure: core cloud infrastructure in reusable modules, external/bootstrap integrations at the root.
+- Keep CI-safe Terraform separate from live/bootstrap Terraform when providers need real credentials or cluster endpoints.
 
-**Formatting**
-- Use 2 spaces for indentation
-- Place `required_version` at the top of `versions.tf`
-- Add blank lines between resources
-- Place provider configuration first in `providers.tf`
-- Use `terraform fmt -check -recursive` before committing
+## Terraform Code Style
 
-**Variable and Output Styles**
-- Group variables logically with `locals` section separators
-- Provide descriptive `description` for all variables and outputs
-- Use type constraints where appropriate: `string`, `number`, `bool`, or custom types
-- Set sensible defaults for required values
-- Use `validation` blocks for custom validation logic
+- Use lowercase snake_case for variables, locals, resources, and outputs.
+- Put `required_version` and `required_providers` in `versions.tf`.
+- Put provider configuration in `providers.tf`.
+- Keep variables and outputs descriptive; every new variable and output should include `description`.
+- Use 2-space indentation and rely on `terraform fmt`.
+- Prefer `for_each` over `count` for stable addressing when iterating resources.
+- Keep locals focused on shared values or derived expressions; do not hide core logic in large locals blocks.
+- Use explicit `depends_on` only when Terraform cannot infer the dependency.
+- Mark secrets and tokens as `sensitive = true`.
+- Do not hardcode environment-specific values outside examples or test fixtures.
 
-**Error Handling**
-- Use `depends_on` explicitly when relationships aren't clear
-- Document sensitive values in variable defaults with `sensitive = true`
-- For provider conflicts, specify provider in resource: `provider = google-beta`
-- Use `for_each` to handle multiple resources with idempotent configs
+## Imports, Naming, and Types
 
-### Flux/Kubernetes Manifest Style
+- For Go Terratest code, keep imports grouped by standard library, third-party, then internal packages.
+- Keep Go packages small and purpose-specific: `internal/testenv` for paths/env and `internal/terraformrun` for shell-based helpers.
+- Prefer concrete types for decoded plan structures instead of `map[string]interface{}` everywhere.
+- Use clear test names that describe behavior, e.g. `TestTerraformPlanContract`.
+- Keep Terraform resource names descriptive but concise, e.g. `cluster_a`, `gateway_ip`, `required`.
 
-**Manifest Organization**
-- Use `kustomization.yaml` to group related manifests
-- Organize by component: `base/` (common), `overlays/` (specific environments)
-- Use `patchesStrategicMerge` for environment-specific overrides
-- Use `images` list for image versioning
+## Error Handling and Testing Expectations
 
-**Naming Conventions**
-- Namespaces: `lowercase`, e.g., `production`
-- Deployments: `lowercase`, e.g., `gateway-controller`
-- Services: `lowercase`, e.g., `gateway-svc`
-- Ingress/Gateway: `lowercase`, e.g., `api-gateway`
+- Prefer tests that fail for contract regressions, not implementation details.
+- For Terratest negative-path scenarios, prefer `terraform.InitAndApplyE` and assert stable error substrings.
+- For CI-safe tests in this repo, prefer `terraform validate`, `terraform plan`, and `terraform show -json`; avoid `apply` unless the user explicitly wants real integration testing.
+- Keep cleanup explicit for any future apply-based tests.
+- Use `t.Parallel()` only when tests do not share mutable working state.
+- Do not depend on live GCP, GitHub, or Cloudflare credentials in default CI.
 
-**Best Practices**
-- Use resource annotations for Flux compatibility
-- Avoid hardcoding values; use Helm charts when possible
-- Keep manifests minimal and composable
-- Use `flux reconcile` for cluster-specific updates
+## Flux / Kubernetes Manifest Style
 
-## Testing Approach
+- Use `kustomization.yaml` to compose resources.
+- Keep base manifests reusable and overlays minimal.
+- Use lowercase resource names.
+- Avoid environment-specific duplication when a patch or overlay is enough.
+- Keep manifests minimal and composable for teaching clarity.
 
-This repository uses validation workflows rather than automated testing:
+## Files To Treat Carefully
 
-1. **Terraform Validation**: Run `terraform validate` locally before committing
-2. **Flux Validation**: Build manifests with `kustomize build` and validate YAML syntax
-3. **CI/CD Workflows**: GitHub Actions run formatting and validation checks
-4. **Manual Testing**: After applying changes, validate infrastructure and Gateway configuration in clusters
+- `terraform/providers.tf` wires live Kubernetes and Flux providers from real cluster outputs.
+- `terraform/flux.tf` and `terraform/cloudflare.tf` are live-integration concerns and are not part of the CI-safe Terratest plan path.
+- `tests/terratest/testdata/ci.auto.tfvars` must stay fake but syntactically valid.
 
-No unit tests exist; validation focuses on syntax and structural correctness.
+## Recommended Verification Before Finishing
+
+```bash
+cd terraform && terraform fmt -check -recursive
+cd terraform && terraform init -backend=false && terraform validate
+cd terraform/ci && terraform init -backend=false && terraform validate
+cd tests/terratest && go test -v ./... -count=1 -timeout 30m
+kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
+```
+
+## Known Constraints
+
+- The main Terraform root cannot be fully planned in CI without live credentials because Flux, Kubernetes, and Cloudflare providers are part of the graph.
+- Use `terraform/ci` for contract-style plan tests.
+- Multi-cluster Gateway behavior, Flux bootstrap, and Cloudflare DNS still require manual or integration validation against real infrastructure.
