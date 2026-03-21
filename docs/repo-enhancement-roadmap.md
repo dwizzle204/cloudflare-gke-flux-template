@@ -3,7 +3,6 @@
 This repository now includes a CI-safe Terratest foundation, and the modernization path is intentionally staged so contributors can learn the order as well as the mechanics.
 
 Start with `docs/how-to-modernize-this-repo.md` for the recommended sequence and rationale.
-Use `docs/state-migration-guide.md` before applying the module refactor to any environment with existing state.
 
 ## Immediate Foundation
 

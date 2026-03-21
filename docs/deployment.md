@@ -41,31 +41,6 @@ Both FluxInstance resources should sync the cluster-specific Git paths declarati
 - Cluster A -> `gitops/clusters/cluster-a`
 - Cluster B -> `gitops/clusters/cluster-b`
 
-## Migrating from Flux bootstrap to Flux Operator
-
-If you already have clusters bootstrapped with `flux bootstrap`, migrate them before adopting this template's operator-managed pattern.
-
-Recommended sequence:
-
-1. Upgrade to a modern Flux CLI (`v2.8+`).
-2. Run the migration check from the repo root:
-
-```bash
-flux migrate -f . --dry-run
-```
-
-3. Follow the Flux Operator migration guide for existing bootstrapped clusters:
-
-https://fluxoperator.dev/docs/guides/migration/
-
-4. After migration, the steady-state model should be:
-
-- Flux Operator installed on both clusters
-- one `FluxInstance` named `flux` in `flux-system` on each cluster
-- cluster-specific `sync.path` values pointing at this repository
-
-Do not keep a mixed model where one cluster uses operator-managed Flux and another still depends on manual bootstrap.
-
 ## Step 4: Verify GitOps reconciliation
 
 Check that:

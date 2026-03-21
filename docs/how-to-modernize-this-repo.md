@@ -108,18 +108,7 @@ Why later:
 - Provider wiring is brittle if the cluster implementation is still moving
 - You want one stable source of truth for endpoint and CA values
 
-### Step 6: Document State Migration Before Anyone Applies Changes
-
-Changing raw resources to modules changes Terraform addresses. That matters for existing state.
-
-Read `docs/state-migration-guide.md` before applying the refactor to a live environment.
-
-Why before apply:
-
-- Without a migration plan, Terraform may propose replacement instead of adoption
-- The learning repo should explain both the code change and the operational consequence
-
-### Step 7: Keep Terratest Focused On Contracts, Not Internals
+### Step 6: Keep Terratest Focused On Contracts, Not Internals
 
 The Terratest suite should verify behavior that matters to contributors:
 
