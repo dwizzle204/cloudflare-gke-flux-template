@@ -1,6 +1,9 @@
 # Repo Enhancement Roadmap
 
-This repository now includes a CI-safe Terratest foundation, but the larger modernization path is still intentionally staged.
+This repository now includes a CI-safe Terratest foundation, and the modernization path is intentionally staged so contributors can learn the order as well as the mechanics.
+
+Start with `docs/how-to-modernize-this-repo.md` for the recommended sequence and rationale.
+Use `docs/state-migration-guide.md` before applying the module refactor to any environment with existing state.
 
 ## Immediate Foundation
 
@@ -15,8 +18,8 @@ When replacing raw Terraform resources with pinned modules, prefer these candida
 
 1. `terraform-google-modules/project-factory/google//modules/project_services` pinned to `18.2.0`
 2. `terraform-google-modules/network/google` pinned to `16.1.0`
-3. `terraform-google-modules/cloud-router/google` pinned to `6.2.0`
-4. `terraform-google-modules/kubernetes-engine/google//modules/beta-public-cluster` pinned to `44.0.0`
+3. `terraform-google-modules/cloud-router/google` pinned to `8.3.0`
+4. `terraform-google-modules/kubernetes-engine/google` pinned to `44.0.0`
 
 ## Resources That Should Stay Raw
 
