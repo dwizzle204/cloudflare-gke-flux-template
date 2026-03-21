@@ -6,6 +6,13 @@ on:
       - "flux/**"
       - ".github/workflows/gitops-validate.yaml"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: gitops-validate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -15,7 +22,7 @@ jobs:
 
       - name: Install kustomize
         run: |
-          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/latest/download/kustomize_linux_amd64.tar.gz -o /tmp/kustomize.tar.gz
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz -o /tmp/kustomize.tar.gz
           tar -xzf /tmp/kustomize.tar.gz -C /tmp
           sudo mv /tmp/kustomize /usr/local/bin/kustomize
 

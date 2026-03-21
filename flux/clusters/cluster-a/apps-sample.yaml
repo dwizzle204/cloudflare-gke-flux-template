@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
+  timeout: 1m
   ref:
     branch: main
   url: https://github.com/REPLACE_ME/REPLACE_ME
@@ -17,6 +18,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  retryInterval: 1m
+  timeout: 3m
   prune: true
   wait: true
   sourceRef:
