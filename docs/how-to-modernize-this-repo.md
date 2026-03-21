@@ -1,6 +1,8 @@
 # How To Modernize This Repo Safely
 
-This repository is a learning template, so the goal is not just to change the code. The goal is to make the order of changes understandable, repeatable, and safe for future contributors.
+> Internal reference. This page documents the modernization sequence used to shape the current repository. It is not the primary user guide for the template.
+
+This repository is now a reusable template. This page remains as a reference for the sequence that made the repo converge on its current shape.
 
 ## Why This Order Matters
 

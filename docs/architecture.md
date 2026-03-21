@@ -1,6 +1,6 @@
 # Architecture
 
-This template implements a fixed ingress model.
+This template implements one ingress model only.
 
 ```text
 Internet
@@ -11,7 +11,7 @@ Internet
   -> Services in Cluster A and Cluster B
 ```
 
-## Traffic Rules
+## Traffic rules
 
 - Cloudflare is the only supported public endpoint.
 - The GCP global external load balancer exists behind Cloudflare.
@@ -19,7 +19,7 @@ Internet
 - Services are exported from both clusters through MCS.
 - HTTPRoute targets the `ServiceImport` created from those `ServiceExport` resources.
 
-## Platform Responsibilities
+## Platform responsibilities
 
 ### Cloudflare
 
@@ -40,8 +40,8 @@ Internet
 - Cluster A manages Gateway and HTTPRoute
 - both clusters run the sample app and `ServiceExport`
 
-## Ownership Boundary
+## Ownership boundary
 
 - Terraform owns infrastructure and declarative Flux Operator bootstrap primitives on both clusters.
-- Flux owns Kubernetes manifests after the operator installs the controllers and cluster sync resources.
-- Both clusters reconcile from Git declaratively; only Cluster A carries the Gateway layer.
+- Flux owns Kubernetes manifests after the operator installs controllers and sync resources.
+- Both clusters reconcile from Git. Only Cluster A carries the Gateway layer.

@@ -1,5 +1,7 @@
 # Operations
 
+Use this page after the initial deployment is complete.
+
 ## Validate cluster registration
 
 ```bash
@@ -12,7 +14,7 @@ gcloud container fleet memberships list --project "$PROJECT_ID"
 kubectl --context "$CONFIG_CONTEXT" get gatewayclasses
 ```
 
-You should see `gke-l7-global-external-managed-mc`.
+Expected result: you should see `gke-l7-global-external-managed-mc`.
 
 ## Validate ServiceExport
 
@@ -43,15 +45,17 @@ flux --context "$CLUSTER_B_CONTEXT" get all -A
 
 ## Change management
 
-- Terraform changes:
-  - infrastructure
-  - cluster lifecycle
-  - static IP
-  - Cloudflare DNS
-  - Flux bootstrap
+Use Terraform for:
 
-- Flux changes:
-  - Gateway / HTTPRoute
-  - app manifests
-  - namespace resources
-  - ServiceExport
+- infrastructure
+- cluster lifecycle
+- static IP
+- Cloudflare DNS and edge settings
+- Flux Operator and FluxInstance bootstrap primitives
+
+Use GitOps for:
+
+- Gateway and HTTPRoute
+- application manifests
+- namespace resources
+- `ServiceExport`

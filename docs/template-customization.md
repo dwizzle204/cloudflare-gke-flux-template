@@ -1,36 +1,31 @@
-# Template Customization Checklist
+# Template Customization
 
-Use this checklist before your first real deployment.
+Use this page before the first apply.
 
-## Required replacements
+## Step 1: Set Terraform inputs
 
-### Terraform inputs
+Prepare real values for:
 
-- Set `project_id`
-- Set `region_a`
-- Set `region_b`
-- Set `cloudflare_zone_name`
-- Set `cloudflare_hostname`
-- Set `gateway_hostname`
-- Set `git_repository_owner`
-- Set `git_repository_name`
-- Provide secure values for:
-  - `cloudflare_api_token`
-  - `github_token`
+- `project_id`
+- `region_a`
+- `region_b`
+- `cloudflare_zone_name`
+- `cloudflare_hostname`
+- `gateway_hostname`
+- `git_repository_owner`
+- `git_repository_name`
+- `git_branch`
 
-## GitHub Actions apply prerequisites
+Provide secure values for:
 
-If you use the built-in `terraform-apply` workflow, configure these GitHub Actions secrets:
+- `cloudflare_api_token`
+- `github_token`
 
-- `GCP_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_SERVICE_ACCOUNT_EMAIL`
-- `TERRAFORM_TFVARS`
+## Step 2: Replace GitOps placeholders
 
-`TERRAFORM_TFVARS` should contain the complete live tfvars content for the environment.
+This template intentionally ships with placeholders in the GitOps manifests.
 
-### GitOps placeholders
-
-The following placeholders are expected in the template until you render or replace them:
+Expected placeholders:
 
 - `REPLACE_ME_GATEWAY_STATIC_IP_NAME`
 - `REPLACE_ME_GATEWAY_HOSTNAME`
@@ -38,16 +33,16 @@ The following placeholders are expected in the template until you render or repl
 - `REPLACE_ME_GIT_BRANCH`
 - `https://github.com/REPLACE_ME/REPLACE_ME`
 
-They appear in:
+These appear in:
 
 - `gitops/infrastructure/gateway/gateway.yaml`
 - `gitops/infrastructure/gateway/httproute.yaml`
 - `gitops/clusters/cluster-a/apps-sample.yaml`
 - `gitops/clusters/cluster-b/apps-sample.yaml`
 
-## Recommended rendering step
+## Step 3: Render placeholders
 
-Export the real values and run:
+Run:
 
 ```bash
 export GATEWAY_STATIC_IP_NAME="your-reserved-ip-name"
@@ -58,19 +53,21 @@ export GIT_REPOSITORY_URL="https://github.com/your-org/your-repo"
 python3 scripts/render-placeholders.py
 ```
 
-## Cloudflare TLS expectations
+Expected result:
 
-This template enforces:
+- the GitOps manifests point at your real repository, branch, hostname, static IP name, and certificate map name
 
-- Authenticated Origin Pulls enabled
-- Cloudflare SSL mode set to `strict`
-- `always_use_https` enabled
-- Google Certificate Manager managed certificate for the gateway hostname
-- Certificate map attachment from the Gateway to the GCP HTTPS origin
+## Step 4: Configure apply workflow secrets
 
-That means the GCP external HTTPS origin must present a certificate Cloudflare accepts for the configured hostname.
+If you use the built-in apply workflow, configure these GitHub Actions secrets:
 
-## Final pre-apply checks
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+- `TERRAFORM_TFVARS`
+
+`TERRAFORM_TFVARS` should contain the full live tfvars content for the environment.
+
+## Step 5: Validate before apply
 
 Run:
 

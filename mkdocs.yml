@@ -1,0 +1,28 @@
+site_name: Cloudflare GKE Flux Template
+docs_dir: docs
+site_description: Technical how-to documentation for the Cloudflare + GKE + Flux multi-cluster gateway template
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Overview: getting-started/index.md
+      - Deployment Order: deployment.md
+      - Template Customization: template-customization.md
+      - Secrets and Authentication: secrets-auth.md
+  - Platform:
+      - Overview: platform/index.md
+      - Architecture: architecture.md
+      - Cloudflare Edge: cloudflare.md
+      - GitOps Structure: gitops.md
+  - Reference:
+      - Reference Overview: reference/index.md
+      - Variables: variables.md
+      - GKE Layout Review: gke-layout-review.md
+  - Operations:
+      - Operations Overview: operations/index.md
+      - Validation and Routine Checks: operations.md
+      - How It Works: how-it-works.md
+      - Skill Audit Report: skill-audit-report.md
+
+theme:
+  name: mkdocs

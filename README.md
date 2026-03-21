@@ -1,6 +1,6 @@
 # Cloudflare + GKE + Flux Multi-Cluster Gateway Template
 
-This repository is a reusable, production-aligned template for deploying a two-cluster GKE platform with Cloudflare as the only public entry point.
+This repository is a reusable template for running two GKE clusters behind a single Cloudflare-protected public hostname.
 
 ## Architecture
 
@@ -13,78 +13,44 @@ Internet
   -> Services running in Cluster A and Cluster B
 ```
 
-## What This Template Provisions
+## What the template builds
 
-- Cloudflare proxied DNS for the public hostname
-- Cloudflare Authenticated Origin Pulls enabled at the zone
-- Shared GCP VPC, subnets, and Cloud NAT
-- Two regional GKE clusters
-  - Cluster A = workload + config cluster
-  - Cluster B = workload cluster
+- Cloudflare as the only public edge
+- shared GCP VPC, subnets, and Cloud NAT
+- two regional GKE clusters
+  - Cluster A: workload + config cluster
+  - Cluster B: workload cluster
 - Fleet membership, Multi-Cluster Services, and multi-cluster Gateway prerequisites
-- Global static IP for the external load balancer
-- Flux Operator installation and FluxInstance bootstrap on both clusters using Terraform
-- GitOps-managed Kubernetes resources under `gitops/`
+- one global static IP for the external load balancer
+- Flux Operator and one `FluxInstance` per cluster
+- GitOps-managed Gateway, HTTPRoute, workloads, and `ServiceExport`
 
-## What This Template Does Not Do
+## Read the docs in this order
 
-- No third cluster
-- No internal multi-cluster gateway
-- No alternate ingress controller such as NGINX or Istio
-- No Cloudflare tunnels
-- No Terraform-managed workloads after Flux bootstrap
+1. `docs/index.md`
+2. `docs/deployment.md`
+3. `docs/template-customization.md`
+4. `docs/secrets-auth.md`
+5. `docs/cloudflare.md`
+6. `docs/gitops.md`
+7. `docs/operations.md`
 
-## Repository Layout
+## Quick start
 
-```text
-.
-├── .github/workflows/
-├── docs/
-├── gitops/
-│   ├── apps/
-│   ├── clusters/
-│   └── infrastructure/
-├── terraform/
-└── tests/terratest/
-```
+1. Create the target GitHub repository and commit this template into it.
+2. Replace the required placeholders in `gitops/`.
+3. Prepare Terraform inputs from `terraform/terraform.tfvars.example`.
+4. Apply Terraform from `terraform/`.
+5. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
+6. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
 
-## Deployment Order
+## What this template does not do
 
-1. Prepare input values from `terraform/terraform.tfvars.example`.
-2. Create and push the target GitHub repository, then render the required placeholders in `gitops/`.
-3. Apply Terraform in `terraform/` to provision GCP, Cloudflare, Flux Operator, and one FluxInstance per cluster.
-4. Let each cluster reconcile its own `gitops/clusters/<cluster-name>` path.
-5. Verify Gateway resources reconcile only on Cluster A.
-6. Verify the Cloudflare hostname resolves through Cloudflare to the global external load balancer.
-
-## Cluster Responsibilities
-
-### Cluster A
-
-- workload cluster
-- config cluster for multi-cluster Gateway
-- Gateway and HTTPRoute resources
-- sample workload and ServiceExport
-
-### Cluster B
-
-- workload cluster only
-- sample workload and ServiceExport
-- no Gateway resources
-
-## Variables
-
-See:
-
-- `docs/variables.md`
-- `terraform/terraform.tfvars.example`
-
-Required inputs include:
-
-- GCP project and regions
-- Cloudflare zone name, hostname, and API token
-- GitHub repository owner/name and token
-- Gateway hostname
+- no third cluster
+- no internal multi-cluster gateway
+- no alternate ingress controller such as NGINX or Istio
+- no Cloudflare tunnels
+- no Terraform-managed workloads after Flux bootstrap
 
 ## Validation
 
@@ -106,14 +72,5 @@ flux migrate -f . --dry-run
 kustomize build gitops/infrastructure/gateway
 kustomize build gitops/apps/sample-app/overlays/cluster-a
 kustomize build gitops/apps/sample-app/overlays/cluster-b
+python3 scripts/check-template-placeholders.py
 ```
-
-## Documentation
-
-- `docs/architecture.md`
-- `docs/deployment.md`
-- `docs/secrets-auth.md`
-- `docs/template-customization.md`
-- `docs/variables.md`
-- `docs/gitops.md`
-- `docs/cloudflare.md`

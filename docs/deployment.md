@@ -1,22 +1,59 @@
-# Deployment Steps
+# Deployment Order
+
+Use this page as the main runbook.
 
 ## Prerequisites
+
+You need:
 
 - Terraform
 - `gcloud`
 - `kubectl`
 - `flux` v2.8 or newer
 - `kustomize`
-- existing Cloudflare zone
-- existing GitHub repository
+- an existing Cloudflare zone
+- an existing GitHub repository that contains this template
 
-## Step 1: Prepare variables
+## Step 1: Prepare the repository
 
-Copy `terraform/terraform.tfvars.example` and provide real values through `terraform.tfvars` or your secret injection path.
+Push this template to the GitHub repository that Flux will sync from.
 
-Before you apply, make sure the target GitHub repository already exists, this template is committed there, and you have rendered the required placeholders in `gitops/`.
+Expected result:
 
-## Step 2: Apply Terraform
+- the repository exists
+- the default branch exists
+- Flux can later read from the final Git URL
+
+## Step 2: Replace template placeholders
+
+Follow `template-customization.md` before you run Terraform.
+
+At minimum, replace the placeholders used by:
+
+- `gitops/clusters/cluster-a/apps-sample.yaml`
+- `gitops/clusters/cluster-b/apps-sample.yaml`
+- `gitops/infrastructure/gateway/gateway.yaml`
+- `gitops/infrastructure/gateway/httproute.yaml`
+
+Expected result:
+
+- GitOps manifests point at your real repository, branch, hostname, and certificate map name
+
+## Step 3: Prepare Terraform inputs
+
+Copy `terraform/terraform.tfvars.example` into your private tfvars source and fill in real values.
+
+Required categories:
+
+- GCP project and regions
+- Cloudflare zone and hostname
+- Git repository owner, name, and branch
+- gateway hostname
+- secrets and tokens
+
+## Step 4: Apply Terraform
+
+Run:
 
 ```bash
 cd terraform
@@ -25,25 +62,40 @@ terraform plan
 terraform apply
 ```
 
-Terraform provisions GCP infrastructure, Cloudflare edge resources, installs Flux Operator on both clusters, and creates one FluxInstance per cluster.
+Terraform will:
 
-## Step 3: Verify Flux Operator bootstrap
+- create the GCP network and clusters
+- configure the Cloudflare edge
+- create the certificate resources for the HTTPS origin path
+- install Flux Operator on both clusters
+- create one `FluxInstance` per cluster
 
-After Terraform completes, confirm that both clusters have a `flux` FluxInstance in the `flux-system` namespace.
+Expected result:
 
-Example:
+- Cluster A syncs `gitops/clusters/cluster-a`
+- Cluster B syncs `gitops/clusters/cluster-b`
+
+## Step 5: Verify Flux bootstrap
+
+Fetch cluster credentials first:
+
+```bash
+gcloud container clusters get-credentials <cluster-a-name> --region <region-a> --project <project-id>
+gcloud container clusters get-credentials <cluster-b-name> --region <region-b> --project <project-id>
+```
+
+Then verify the FluxInstance objects:
 
 ```bash
 kubectl --context <cluster-a-context> -n flux-system get fluxinstance flux
 kubectl --context <cluster-b-context> -n flux-system get fluxinstance flux
 ```
 
-Both FluxInstance resources should sync the cluster-specific Git paths declaratively:
+Expected result:
 
-- Cluster A -> `gitops/clusters/cluster-a`
-- Cluster B -> `gitops/clusters/cluster-b`
+- both clusters report a `flux` FluxInstance in `flux-system`
 
-## Step 4: Verify GitOps reconciliation
+## Step 6: Verify GitOps reconciliation
 
 Check that:
 
@@ -52,13 +104,16 @@ Check that:
 - Gateway and HTTPRoute exist only on Cluster A
 - `ServiceExport` exists in both clusters
 
-Before running these checks, fetch credentials for both regional clusters:
+## Step 7: Verify ingress
 
-```bash
-gcloud container clusters get-credentials <cluster-a-name> --region <region-a> --project <project-id>
-gcloud container clusters get-credentials <cluster-b-name> --region <region-b> --project <project-id>
-```
+Confirm that:
 
-## Step 5: Verify ingress
+- Cloudflare proxies the public hostname
+- the hostname resolves to the GCP external load balancer path through Cloudflare
+- traffic reaches the sample workload through the multi-cluster Gateway
 
-Confirm that the Cloudflare hostname resolves through Cloudflare and routes to the sample workload through the GCP global external load balancer and multi-cluster Gateway.
+## What to do next
+
+- Use `operations.md` for routine validation commands
+- Use `cloudflare.md` for edge-specific details
+- Use `gitops.md` if you need to understand how the two cluster sync paths are divided
