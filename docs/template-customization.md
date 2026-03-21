@@ -18,6 +18,16 @@ Use this checklist before your first real deployment.
   - `cloudflare_api_token`
   - `github_token`
 
+## GitHub Actions apply prerequisites
+
+If you use the built-in `terraform-apply` workflow, configure these GitHub Actions secrets:
+
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+- `TERRAFORM_TFVARS`
+
+`TERRAFORM_TFVARS` should contain the complete live tfvars content for the environment.
+
 ### GitOps placeholders
 
 The following placeholders are expected in the template until you render or replace them:

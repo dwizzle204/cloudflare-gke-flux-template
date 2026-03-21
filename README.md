@@ -111,6 +111,7 @@ kustomize build gitops/apps/sample-app/overlays/cluster-b
 
 - `docs/architecture.md`
 - `docs/deployment.md`
+- `docs/secrets-auth.md`
 - `docs/template-customization.md`
 - `docs/variables.md`
 - `docs/gitops.md`
