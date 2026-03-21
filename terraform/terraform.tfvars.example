@@ -1,0 +1,17 @@
+project_id     = "replace-me"
+region_a       = "canada-central1"
+region_b       = "northamerica-northeast1"
+zone_a         = "canada-central1-a"
+zone_b         = "northamerica-northeast1-a"
+cluster_a_name = "gke-config-a"
+cluster_b_name = "gke-workload-b"
+
+gateway_hostname      = "api.example.com"
+cloudflare_hostname   = "api.example.com"
+cloudflare_zone_id    = "replace-me"
+cloudflare_api_token  = "replace-me"
+
+git_repository_owner = "replace-me"
+git_repository_name  = "replace-me"
+git_branch           = "main"
+github_token         = "replace-me"

@@ -1,0 +1,29 @@
+name: gitops-validate
+
+on:
+  pull_request:
+    paths:
+      - "flux/**"
+      - ".github/workflows/gitops-validate.yaml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kustomize
+        run: |
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/latest/download/kustomize_linux_amd64.tar.gz -o /tmp/kustomize.tar.gz
+          tar -xzf /tmp/kustomize.tar.gz -C /tmp
+          sudo mv /tmp/kustomize /usr/local/bin/kustomize
+
+      - name: Build cluster-a overlay
+        run: kustomize build flux/apps/sample-app/overlays/cluster-a > /tmp/cluster-a.yaml
+
+      - name: Build cluster-b overlay
+        run: kustomize build flux/apps/sample-app/overlays/cluster-b > /tmp/cluster-b.yaml
+
+      - name: Build gateway manifests
+        run: kustomize build flux/infrastructure/gateway > /tmp/gateway.yaml
