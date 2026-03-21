@@ -19,6 +19,4 @@ module "core" {
   subnet_cidr_b           = var.subnet_cidr_b
   subnet_name_a           = var.subnet_name_a
   subnet_name_b           = var.subnet_name_b
-  zone_a                  = var.zone_a
-  zone_b                  = var.zone_b
 }

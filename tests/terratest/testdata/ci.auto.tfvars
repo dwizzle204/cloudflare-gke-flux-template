@@ -1,8 +1,6 @@
 project_id              = "test-project-12345"
 region_a                = "us-central1"
 region_b                = "us-east1"
-zone_a                  = "us-central1-a"
-zone_b                  = "us-east1-b"
 cluster_a_name          = "cluster-a"
 cluster_b_name          = "cluster-b"
 network_name            = "gke-mcg-vpc"

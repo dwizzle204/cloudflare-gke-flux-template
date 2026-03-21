@@ -14,6 +14,8 @@
 
 Copy `terraform/terraform.tfvars.example` and provide real values through `terraform.tfvars` or your secret injection path.
 
+Before you apply, make sure the target GitHub repository already exists, this template is committed there, and you have rendered the required placeholders in `gitops/`.
+
 ## Step 2: Apply Terraform
 
 ```bash
@@ -49,6 +51,13 @@ Check that:
 - Cluster B reconciles `gitops/clusters/cluster-b`
 - Gateway and HTTPRoute exist only on Cluster A
 - `ServiceExport` exists in both clusters
+
+Before running these checks, fetch credentials for both regional clusters:
+
+```bash
+gcloud container clusters get-credentials <cluster-a-name> --region <region-a> --project <project-id>
+gcloud container clusters get-credentials <cluster-b-name> --region <region-b> --project <project-id>
+```
 
 ## Step 5: Verify ingress
 

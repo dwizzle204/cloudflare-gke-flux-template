@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "gitops/**"
+      - "scripts/check-template-placeholders.py"
       - ".github/workflows/gitops-validate.yaml"
 
 permissions:
@@ -19,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install kustomize
         run: |
@@ -49,6 +52,14 @@ jobs:
 
       - name: Build gateway manifests
         run: kustomize build gitops/infrastructure/gateway > /tmp/gateway.yaml
+
+      - name: Validate Flux entrypoint manifests
+        run: |
+          grep -q 'kind: GitRepository' gitops/clusters/cluster-a/apps-sample.yaml
+          grep -q 'kind: Kustomization' gitops/clusters/cluster-a/apps-sample.yaml
+          grep -q 'kind: GitRepository' gitops/clusters/cluster-b/apps-sample.yaml
+          grep -q 'kind: Kustomization' gitops/clusters/cluster-b/apps-sample.yaml
+          grep -q 'kind: Kustomization' gitops/clusters/cluster-a/gateway.yaml
 
       - name: Client dry-run native workload manifests
         run: |

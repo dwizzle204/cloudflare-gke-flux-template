@@ -6,6 +6,7 @@ Cloudflare is the only public endpoint in this template.
 
 - zone lookup from `cloudflare_zone_name`
 - proxied DNS record to the GCP global external load balancer IP
+- unproxied DNS authorization record for Google Certificate Manager
 - Authenticated Origin Pulls enabled at the zone level
 - Cloudflare SSL mode set to `strict`
 - `always_use_https` enabled

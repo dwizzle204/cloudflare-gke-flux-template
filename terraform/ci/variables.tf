@@ -64,12 +64,12 @@ variable "project_id" {
 }
 
 variable "region_a" {
-  description = "Primary region for networking resources in cluster A."
+  description = "Primary region for Cluster A and its regional networking resources."
   type        = string
 }
 
 variable "region_b" {
-  description = "Primary region for networking resources in cluster B."
+  description = "Primary region for Cluster B and its regional networking resources."
   type        = string
 }
 
@@ -107,14 +107,4 @@ variable "subnet_name_b" {
   description = "Subnet name for cluster B."
   type        = string
   default     = "gke-b"
-}
-
-variable "zone_a" {
-  description = "Zone for cluster A."
-  type        = string
-}
-
-variable "zone_b" {
-  description = "Zone for cluster B."
-  type        = string
 }

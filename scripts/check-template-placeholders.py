@@ -9,15 +9,18 @@ EXPECTED = {
     Path("gitops/infrastructure/gateway/gateway.yaml"): [
         "REPLACE_ME_GATEWAY_STATIC_IP_NAME",
         "REPLACE_ME_GATEWAY_HOSTNAME",
+        "REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME",
     ],
     Path("gitops/infrastructure/gateway/httproute.yaml"): [
         "REPLACE_ME_GATEWAY_HOSTNAME",
     ],
     Path("gitops/clusters/cluster-a/apps-sample.yaml"): [
         "https://github.com/REPLACE_ME/REPLACE_ME",
+        "REPLACE_ME_GIT_BRANCH",
     ],
     Path("gitops/clusters/cluster-b/apps-sample.yaml"): [
         "https://github.com/REPLACE_ME/REPLACE_ME",
+        "REPLACE_ME_GIT_BRANCH",
     ],
 }
 
@@ -30,6 +33,8 @@ for path in ROOT.rglob("*.yaml"):
     for token in [
         "REPLACE_ME_GATEWAY_STATIC_IP_NAME",
         "REPLACE_ME_GATEWAY_HOSTNAME",
+        "REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME",
+        "REPLACE_ME_GIT_BRANCH",
         "https://github.com/REPLACE_ME/REPLACE_ME",
     ]:
         if token in text:

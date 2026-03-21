@@ -4,7 +4,7 @@ This review is intentionally repo-only. It evaluates the cluster architecture de
 
 ## Declared Architecture
 
-- Two zonal Standard GKE clusters are declared in `terraform/gke.tf`.
+- Two regional Standard GKE clusters are declared in `terraform/gke.tf`.
 - `cluster_a` acts as the config cluster for multicluster ingress in `terraform/fleet.tf`.
 - Both clusters share a single global-routing VPC with region-local subnets and dedicated pod/services secondary ranges in `terraform/networking.tf`.
 - Each cluster uses a single fixed-size node pool with `e2-standard-2` and `node_count = 2`.

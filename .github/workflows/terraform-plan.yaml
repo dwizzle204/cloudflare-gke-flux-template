@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "terraform/**"
+      - "tests/terratest/testdata/**"
       - ".github/workflows/terraform-plan.yaml"
 
 permissions:

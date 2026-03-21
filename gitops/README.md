@@ -20,5 +20,4 @@ For multi-cluster Gateway, the `Gateway`, `HTTPRoute`, and policy resources are 
 ## Why both clusters export the same Service
 The multi-cluster active-active pattern is simplest when both clusters export the same service name and namespace. MCS creates a `ServiceImport`, and the Gateway routes to that imported service.
 
-Cluster A is bootstrapped by Terraform.
-Cluster B is expected to be bootstrapped with the Flux CLI against `gitops/clusters/cluster-b`.
+Both clusters are bootstrapped declaratively through Flux Operator and one `FluxInstance` per cluster.

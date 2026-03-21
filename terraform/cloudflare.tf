@@ -3,6 +3,15 @@ data "cloudflare_zones" "selected" {
   max_items = 1
 }
 
+resource "cloudflare_dns_record" "gateway_certificate_dns_authorization" {
+  zone_id = data.cloudflare_zones.selected.result[0].id
+  name    = trimsuffix(google_certificate_manager_dns_authorization.gateway.dns_resource_record[0].name, ".")
+  type    = google_certificate_manager_dns_authorization.gateway.dns_resource_record[0].type
+  content = trimsuffix(google_certificate_manager_dns_authorization.gateway.dns_resource_record[0].data, ".")
+  proxied = false
+  ttl     = 1
+}
+
 resource "cloudflare_authenticated_origin_pulls_settings" "zone" {
   zone_id = data.cloudflare_zones.selected.result[0].id
   enabled = true

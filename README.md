@@ -51,10 +51,11 @@ Internet
 ## Deployment Order
 
 1. Prepare input values from `terraform/terraform.tfvars.example`.
-2. Apply Terraform in `terraform/` to provision GCP, Cloudflare, Flux Operator, and one FluxInstance per cluster.
-3. Let each cluster reconcile its own `gitops/clusters/<cluster-name>` path.
-4. Verify Gateway resources reconcile only on Cluster A.
-5. Verify the Cloudflare hostname resolves through Cloudflare to the global external load balancer.
+2. Create and push the target GitHub repository, then render the required placeholders in `gitops/`.
+3. Apply Terraform in `terraform/` to provision GCP, Cloudflare, Flux Operator, and one FluxInstance per cluster.
+4. Let each cluster reconcile its own `gitops/clusters/<cluster-name>` path.
+5. Verify Gateway resources reconcile only on Cluster A.
+6. Verify the Cloudflare hostname resolves through Cloudflare to the global external load balancer.
 
 ## Cluster Responsibilities
 

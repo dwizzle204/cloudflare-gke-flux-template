@@ -61,7 +61,7 @@ See `docs/gke-layout-review.md` for the full review.
 High-level findings:
 
 - The repo favors teaching clarity over production-level resiliency.
-- The two-cluster zonal design is easy to understand but not highly available.
+- The two-cluster regional design is easier to understand than a larger fleet while staying closer to production availability expectations.
 - Fixed-size pools are simple and predictable but not cost- or capacity-adaptive.
 - The Fleet and Gateway design is explicit and understandable.
 - Live review is still required for operational validation.

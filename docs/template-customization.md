@@ -34,6 +34,8 @@ The following placeholders are expected in the template until you render or repl
 
 - `REPLACE_ME_GATEWAY_STATIC_IP_NAME`
 - `REPLACE_ME_GATEWAY_HOSTNAME`
+- `REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME`
+- `REPLACE_ME_GIT_BRANCH`
 - `https://github.com/REPLACE_ME/REPLACE_ME`
 
 They appear in:
@@ -50,6 +52,8 @@ Export the real values and run:
 ```bash
 export GATEWAY_STATIC_IP_NAME="your-reserved-ip-name"
 export GATEWAY_HOSTNAME="api.your-domain.example"
+export GATEWAY_CERTIFICATE_MAP_NAME="your-gateway-cert-map"
+export GIT_BRANCH="main"
 export GIT_REPOSITORY_URL="https://github.com/your-org/your-repo"
 python3 scripts/render-placeholders.py
 ```
@@ -61,6 +65,8 @@ This template enforces:
 - Authenticated Origin Pulls enabled
 - Cloudflare SSL mode set to `strict`
 - `always_use_https` enabled
+- Google Certificate Manager managed certificate for the gateway hostname
+- Certificate map attachment from the Gateway to the GCP HTTPS origin
 
 That means the GCP external HTTPS origin must present a certificate Cloudflare accepts for the configured hostname.
 

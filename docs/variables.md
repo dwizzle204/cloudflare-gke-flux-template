@@ -32,7 +32,7 @@
 - `git_repository_owner`: GitHub owner or organization
 - `git_repository_name`: GitHub repository name
 - `git_branch`: Git branch for Flux reconciliation
-- `github_token`: token used for Terraform bootstrap on Cluster A
+- `github_token`: token used to create the Flux sync secret on both clusters
 
 See `docs/template-customization.md` for the full replacement checklist and placeholder rendering flow.
 

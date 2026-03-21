@@ -43,6 +43,30 @@ variable "gateway_static_ip_name" {
   default     = "mcg-external-ip"
 }
 
+variable "gateway_dns_authorization_name" {
+  description = "Name of the Certificate Manager DNS authorization used for the gateway hostname."
+  type        = string
+  default     = "gateway-dns-auth"
+}
+
+variable "gateway_certificate_name" {
+  description = "Name of the Certificate Manager certificate used by the external gateway."
+  type        = string
+  default     = "gateway-certificate"
+}
+
+variable "gateway_certificate_map_name" {
+  description = "Name of the Certificate Manager certificate map attached to the external gateway."
+  type        = string
+  default     = "gateway-cert-map"
+}
+
+variable "gateway_certificate_map_entry_name" {
+  description = "Name of the Certificate Manager certificate map entry for the gateway hostname."
+  type        = string
+  default     = "gateway-cert-entry"
+}
+
 variable "git_branch" {
   description = "Git branch that Flux should reconcile from."
   type        = string
@@ -60,7 +84,7 @@ variable "git_repository_owner" {
 }
 
 variable "github_token" {
-  description = "GitHub token used by Terraform to bootstrap Flux on Cluster A only."
+  description = "GitHub token used to create the Flux sync secret on both clusters."
   type        = string
   sensitive   = true
 }
