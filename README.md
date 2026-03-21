@@ -111,6 +111,7 @@ kustomize build gitops/apps/sample-app/overlays/cluster-b
 
 - `docs/architecture.md`
 - `docs/deployment.md`
+- `docs/template-customization.md`
 - `docs/variables.md`
 - `docs/gitops.md`
 - `docs/cloudflare.md`

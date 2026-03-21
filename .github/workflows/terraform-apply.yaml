@@ -2,6 +2,11 @@ name: terraform-apply
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_apply:
+        description: 'Type apply to confirm a live Terraform apply'
+        required: true
+        default: 'no'
 
 permissions:
   contents: read
@@ -21,11 +26,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Confirm apply request
+        run: test "${{ github.event.inputs.confirm_apply }}" = "apply"
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
 
       - name: Terraform init
         run: terraform init
 
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan
+
       - name: Terraform apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan

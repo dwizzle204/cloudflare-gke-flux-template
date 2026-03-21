@@ -39,3 +39,32 @@ Both clusters run Flux through Flux Operator.
 - Cluster B FluxInstance syncs `gitops/clusters/cluster-b`
 
 This keeps Flux installation declarative on both clusters while preserving the asymmetric Gateway ownership model.
+
+## How FluxInstance maps to this repo
+
+Each cluster has the same operator-managed control plane shape:
+
+- `FluxInstance` name: `flux`
+- namespace: `flux-system`
+- source kind: `GitRepository`
+- source URL: this repository
+- source ref: the configured Git branch
+
+Only the sync path changes between clusters.
+
+### Cluster A syncs
+
+- `gitops/clusters/cluster-a`
+- This path includes the app overlay Kustomization for Cluster A
+- This path also includes the multi-cluster Gateway Kustomization
+
+### Cluster B syncs
+
+- `gitops/clusters/cluster-b`
+- This path includes only the app overlay Kustomization for Cluster B
+- It does not include Gateway resources
+
+This is the key best-practice split in the template:
+
+- Flux installation is symmetric
+- Gateway ownership is asymmetric

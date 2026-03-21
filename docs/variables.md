@@ -25,7 +25,7 @@
 
 - `cloudflare_api_token`: Cloudflare API token
 - `cloudflare_zone_name`: Cloudflare zone name
-- `cloudflare_hostname`: proxied public hostname
+- `cloudflare_hostname`: proxied public hostname managed by Cloudflare DNS
 
 ## Git / Flux
 
@@ -33,6 +33,8 @@
 - `git_repository_name`: GitHub repository name
 - `git_branch`: Git branch for Flux reconciliation
 - `github_token`: token used for Terraform bootstrap on Cluster A
+
+See `docs/template-customization.md` for the full replacement checklist and placeholder rendering flow.
 
 ## Gateway
 

@@ -8,6 +8,18 @@ resource "cloudflare_authenticated_origin_pulls_settings" "zone" {
   enabled = true
 }
 
+resource "cloudflare_zone_setting" "ssl_mode" {
+  zone_id    = data.cloudflare_zones.selected.result[0].id
+  setting_id = "ssl"
+  value      = "strict"
+}
+
+resource "cloudflare_zone_setting" "always_use_https" {
+  zone_id    = data.cloudflare_zones.selected.result[0].id
+  setting_id = "always_use_https"
+  value      = "on"
+}
+
 resource "cloudflare_dns_record" "gateway" {
   zone_id = data.cloudflare_zones.selected.result[0].id
   name    = var.cloudflare_hostname

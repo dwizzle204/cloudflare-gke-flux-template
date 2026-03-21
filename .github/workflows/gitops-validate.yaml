@@ -55,3 +55,6 @@ jobs:
           kubectl apply --dry-run=client --validate=false -f gitops/apps/sample-app/base/namespace.yaml
           kubectl apply --dry-run=client --validate=false -f gitops/apps/sample-app/base/service.yaml
           kubectl apply --dry-run=client --validate=false -f gitops/apps/sample-app/base/deployment.yaml
+
+      - name: Audit template placeholders
+        run: python3 scripts/check-template-placeholders.py
