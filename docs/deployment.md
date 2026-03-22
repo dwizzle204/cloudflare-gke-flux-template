@@ -63,6 +63,27 @@ terraform init -backend=false
 terraform validate
 ```
 
+If you want a CI-safe contract plan before the live apply, also run the dedicated CI root:
+
+```bash
+cd ../terraform/ci
+terraform init -backend=false
+terraform validate
+terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
+```
+
+What this does:
+
+- validates the reusable core infrastructure path
+- confirms the core resource contract still plans cleanly
+
+What this does not do:
+
+- provision Cloudflare resources
+- provision certificate resources in the live root
+- bootstrap Flux
+- deploy the platform
+
 ## Step 4: Apply Terraform
 
 Run:

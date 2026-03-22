@@ -30,6 +30,23 @@ Use this stack for three different purposes:
 - `examples/minimal` proves a consumer can call the reusable core module
 - `terraform/ci` plus Terratest checks the broader template contract
 
+## What `terraform/ci` is doing
+
+`terraform/ci/` is a CI-safe Terraform root.
+
+It exists to validate the reusable core infrastructure contract without requiring live Cloudflare, Flux, or cluster credentials.
+
+Use it when you want a no-cloud plan that checks:
+
+- core networking
+- two-cluster GKE shape
+- fleet and gateway prerequisites
+- static IP contract
+
+Do not use it as the real deployment root.
+
+Use `terraform/` for the live infrastructure apply path.
+
 ## Validate cluster registration
 
 ```bash
