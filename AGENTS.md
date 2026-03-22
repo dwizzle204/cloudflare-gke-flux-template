@@ -17,8 +17,6 @@ Internet
 ```
 
 - Cloudflare is the only public endpoint.
-- mTLS validation (default) happens at Cloudflare edge, enabling WAF/DDoS inspection.
-- mTLS can be disabled via `enable_cloudflare_mtls = false`.
 - Gateway resources exist only on Cluster A.
 - Cluster A is the config cluster.
 - Cluster B is workload-only.

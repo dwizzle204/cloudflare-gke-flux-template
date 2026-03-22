@@ -6,7 +6,7 @@ This repository is a reusable template for running two GKE clusters behind a sin
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, TLS termination, mTLS validation & enforcement)
+  -> Cloudflare (DNS, WAF, client-facing TLS)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
@@ -39,16 +39,24 @@ Cloudflare provides **end-to-end mTLS authentication** (enabled by default) to p
 
 ## Quick start
 
-1. Create the target GitHub repository and commit this template into it.
-2. Replace the required placeholders in `gitops/`.
-3. Prepare Terraform inputs from `terraform/terraform.tfvars.example` including mTLS configuration (enabled by default).
+1. Create target GitHub repository and commit this template into it.
+2. Replace required placeholders in `gitops/`.
+3. Prepare Terraform inputs from `terraform/terraform.tfvars.example`.
 4. Apply Terraform from `terraform/`.
-5. Retrieve Cloudflare-managed CA certificate from dashboard after Terraform apply.
-6. Generate and distribute client certificates to authorized clients.
-7. Bootstrap Flux on Cluster A and Cluster B with standard Flux bootstrap using SSH deploy key authentication.
-8. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
-9. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
-10. Verify mTLS is enforced (try connecting without a client certificate - should be blocked by default).
+5. Bootstrap Flux on Cluster A and Cluster B with standard Flux bootstrap using SSH deploy key authentication.
+6. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
+7. Verify public hostname resolves through Cloudflare to GCP external load balancer.
+
+### Optional: Configure Cloudflare edge mTLS
+
+If you require client certificate authentication:
+
+1. Go to **Cloudflare Dashboard** → **Security** → **API Shield** → **mTLS**
+2. Generate or upload your client CA certificate
+3. Select hostname(s) to protect
+4. Set enforcement action: **block** (default), **log** (for troubleshooting), or **challenge** (Enterprise)
+5. Generate and distribute client certificates signed by your CA
+6. Test connectivity with `curl` using client certificates
 
 ## Template repository policy
 

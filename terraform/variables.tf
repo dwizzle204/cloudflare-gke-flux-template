@@ -28,7 +28,7 @@ variable "cloudflare_hostname" {
 }
 
 variable "cloudflare_zone_name" {
-  description = "Cloudflare zone name used to resolve the target zone for DNS and Authenticated Origin Pulls configuration."
+  description = "Cloudflare zone name used to resolve to target zone for DNS and Authenticated Origin Pulls configuration."
   type        = string
 }
 

@@ -8,16 +8,3 @@ gateway_hostname      = "api.example.com"
 cloudflare_hostname   = "api.example.com"
 cloudflare_zone_name  = "example.com"
 cloudflare_api_token  = "replace-me"
-
-# Cloudflare account for mTLS certificate management
-cloudflare_account_id = "<your-cloudflare-account-id>"
-
-# mTLS configuration (enabled by default)
-# Set to false to disable mTLS and allow public access
-enable_cloudflare_mtls = true
-
-# Action when mTLS validation fails: block, log, or challenge
-mtls_enforcement_action = "block"
-
-# Name of Cloudflare-managed CA certificate
-cloudflare_client_ca_name = "mtls-client-ca"

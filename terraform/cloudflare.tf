@@ -37,10 +37,3 @@ resource "cloudflare_dns_record" "gateway" {
   proxied = true
   ttl     = 1
 }
-
-resource "cloudflare_mtls_certificate" "client_ca" {
-  account_id   = var.cloudflare_account_id
-  ca           = true
-  certificates = var.cloudflare_client_ca_certificate
-  name         = var.cloudflare_client_ca_name
-}
