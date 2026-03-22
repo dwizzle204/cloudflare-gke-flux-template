@@ -40,6 +40,7 @@ Internet
 ├── docs/                     # User-facing technical how-to and reference docs
 ├── gitops/                   # Flux-managed cluster and infrastructure manifests
 ├── scripts/                  # Small utilities such as placeholder rendering/auditing
+├── examples/minimal/         # Minimal no-cloud consumer example for modules/core
 ├── terraform/                # Live Terraform root
 │   ├── ci/                   # CI-safe Terraform root
 │   └── modules/core/         # Core infra module used by the CI-safe path
@@ -53,6 +54,15 @@ Internet
 ```bash
 cd terraform
 terraform fmt -check -recursive
+terraform init -backend=false
+terraform validate
+terraform test
+```
+
+### Minimal example
+
+```bash
+cd examples/minimal
 terraform init -backend=false
 terraform validate
 ```
@@ -134,6 +144,7 @@ mkdocs build --strict
 
 - `terraform/providers.tf` wires live cluster access from Terraform outputs.
 - `terraform/flux.tf`, `terraform/cloudflare.tf`, and `terraform/certificates.tf` define the live edge/bootstrap model.
+- `examples/minimal/*` should stay a minimal no-cloud consumer of `terraform/modules/core` only.
 - `gitops/infrastructure/gateway/*` controls the external ingress path.
 - `tests/terratest/testdata/ci.auto.tfvars` must remain fake but syntactically valid.
 
@@ -141,6 +152,8 @@ mkdocs build --strict
 
 ```bash
 cd terraform && terraform fmt -check -recursive && terraform init -backend=false && terraform validate
+cd terraform && terraform test
+cd examples/minimal && terraform init -backend=false && terraform validate
 cd terraform/ci && terraform init -backend=false && terraform validate && terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
 cd tests/terratest && go test -v ./... -count=1 -timeout 30m
 flux migrate -f . --dry-run

@@ -59,6 +59,11 @@ cd terraform
 terraform fmt -check -recursive
 terraform init -backend=false
 terraform validate
+terraform test
+
+cd examples/minimal
+terraform init -backend=false
+terraform validate
 
 cd terraform/ci
 terraform init -backend=false

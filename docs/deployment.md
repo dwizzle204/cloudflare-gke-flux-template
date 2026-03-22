@@ -51,6 +51,18 @@ Required categories:
 - gateway hostname
 - secrets and tokens
 
+If you want a no-cloud smoke check before apply, run the minimal example and native Terraform tests first.
+
+```bash
+cd terraform
+terraform init -backend=false
+terraform test
+
+cd ../examples/minimal
+terraform init -backend=false
+terraform validate
+```
+
 ## Step 4: Apply Terraform
 
 Run:

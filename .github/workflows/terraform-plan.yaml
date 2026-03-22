@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "terraform/**"
+      - "examples/minimal/**"
       - "tests/terratest/testdata/**"
       - ".github/workflows/terraform-plan.yaml"
 
@@ -37,3 +38,9 @@ jobs:
 
       - name: Terraform plan
         run: terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
+
+      - name: Validate minimal example
+        working-directory: examples/minimal
+        run: |
+          terraform init -backend=false
+          terraform validate
