@@ -6,14 +6,16 @@ This repository is a reusable template for running two GKE clusters behind a sin
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, client-facing TLS)
+  -> Cloudflare (DNS, WAF, mTLS-enabled edge, client-facing TLS)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
   -> Services running in Cluster A and Cluster B
 ```
 
-Cloudflare provides **end-to-end mTLS authentication** (enabled by default) to protect your API. Clients must present valid certificates, Cloudflare validates and enforces the requirement based on the configured action, then Cloudflare enables WAF and DDoS inspection for authenticated traffic.
+Cloudflare provides **mTLS-enabled security at edge** (intended to be enabled by default) to protect your API. Clients must present valid certificates, Cloudflare validates and enforces based on configured action, then Cloudflare enables WAF and DDoS inspection for authenticated traffic.
+
+**Note:** Enabling mTLS validation today requires manual configuration in Cloudflare Dashboard or API Shield. This template does not provision mTLS via Terraform.
 
 ## What the template builds
 
