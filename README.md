@@ -6,30 +6,28 @@ This repository is a reusable template for running two GKE clusters behind a sin
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, mTLS-enabled edge, client-facing TLS)
+  -> Cloudflare (DNS, WAF, optional edge mTLS, client-facing TLS)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
   -> Services running in Cluster A and Cluster B
 ```
 
-Cloudflare provides **mTLS-enabled security at edge** (intended to be enabled by default) to protect your API. Clients must present valid certificates, Cloudflare validates and enforces based on configured action, then Cloudflare enables WAF and DDoS inspection for authenticated traffic.
-
-**Note:** Enabling mTLS validation today requires manual configuration in Cloudflare Dashboard or API Shield. This template does not provision mTLS via Terraform.
+Cloudflare can optionally provide edge mTLS for client certificate authentication. This template documents that step, but it is configured manually today and not provisioned by Terraform.
 
 ## What the template builds
 
-- Cloudflare as the only public edge
+- Cloudflare as only public edge
 - shared GCP VPC, subnets, and Cloud NAT
 - two regional GKE clusters
   - Cluster A: workload + config cluster
   - Cluster B: workload cluster
 - Fleet membership, Multi-Cluster Services, and multi-cluster Gateway prerequisites
-- one global static IP for the external load balancer
+- one global static IP for external load balancer
 - standard Flux bootstrap on both clusters
 - GitOps-managed Gateway, HTTPRoute, workloads, and `ServiceExport`
 
-## Read the docs in this order
+## Read docs in this order
 
 1. `docs/index.md`
 2. `docs/deployment.md`
@@ -49,9 +47,13 @@ Cloudflare provides **mTLS-enabled security at edge** (intended to be enabled by
 6. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
 7. Verify public hostname resolves through Cloudflare to GCP external load balancer.
 
-### Optional: Configure Cloudflare edge mTLS
+## Optional: Enable mTLS at Cloudflare Edge
 
-If you require client certificate authentication:
+For production deployments, enable mTLS at Cloudflare Edge for client certificate authentication.
+
+**Security Best Practice:** Edge mTLS protects your API by requiring client certificates, allowing Cloudflare to inspect decrypted traffic for WAF and DDoS protection.
+
+**How to enable:**
 
 1. Go to **Cloudflare Dashboard** → **Security** → **API Shield** → **mTLS**
 2. Generate or upload your client CA certificate
@@ -59,6 +61,8 @@ If you require client certificate authentication:
 4. Set enforcement action: **block** (default), **log** (for troubleshooting), or **challenge** (Enterprise)
 5. Generate and distribute client certificates signed by your CA
 6. Test connectivity with `curl` using client certificates
+
+**Note:** This configuration is done in Cloudflare Dashboard, not via Terraform. This template documents the setup process for reference.
 
 ## Template repository policy
 
