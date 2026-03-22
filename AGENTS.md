@@ -9,7 +9,7 @@ Keep changes generic, production-aligned, and consistent with the documented tra
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, TLS termination)
+  -> Cloudflare (DNS, WAF, TLS termination, mTLS validation)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
@@ -17,6 +17,8 @@ Internet
 ```
 
 - Cloudflare is the only public endpoint.
+- mTLS validation (default) happens at Cloudflare edge, enabling WAF/DDoS inspection.
+- mTLS can be disabled via `enable_cloudflare_mtls = false`.
 - Gateway resources exist only on Cluster A.
 - Cluster A is the config cluster.
 - Cluster B is workload-only.

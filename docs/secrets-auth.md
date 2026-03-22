@@ -33,6 +33,35 @@ Recommended model:
 - use that key with `flux bootstrap git`
 - let Flux create the in-cluster `flux-system` authentication secret during bootstrap
 
+## mTLS client certificates
+
+When mTLS is enabled (default behavior), clients must present valid certificates signed by the Cloudflare-managed CA.
+
+### What Terraform creates
+
+- Cloudflare-managed CA certificate for client authentication
+- mTLS enforcement rules for the protected hostname
+
+### What you must do
+
+1. After `terraform apply`, retrieve the CA certificate from the Cloudflare dashboard
+2. Generate client certificates signed by this CA for your authorized clients
+3. Distribute client certificates to authorized clients
+4. Configure clients to present certificates during the TLS handshake
+
+### CA certificate location
+
+Cloudflare Dashboard → SSL/TLS → Client Certificates → View/Download CA
+
+### Do not commit
+
+- Private keys for the CA or client certificates
+- Any certificate material to the repository
+
+### Custom CA (Enterprise)
+
+If you need to use your own CA instead of the Cloudflare-managed CA, provide the `cloudflare_client_ca_certificate` variable with your PEM-encoded CA certificate content (Enterprise plan required).
+
 ## Apply workflow secrets
 
 The built-in `terraform-apply` workflow expects:

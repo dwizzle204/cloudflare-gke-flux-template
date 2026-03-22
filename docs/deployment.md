@@ -47,9 +47,11 @@ Required categories:
 
 - GCP project and regions
 - Cloudflare zone and hostname
+- Cloudflare account ID for mTLS
 - Git repository owner, name, and branch
-- gateway hostname
-- secrets and tokens
+- Gateway hostname
+- Secrets and tokens
+- mTLS configuration (enabled by default, Cloudflare-managed CA)
 
 If you want a no-cloud smoke check before apply, run the minimal example and native Terraform tests first.
 
@@ -83,6 +85,42 @@ What this does not do:
 - provision certificate resources in the live root
 - bootstrap Flux
 - deploy the platform
+
+## Step 3.5: Configure mTLS (enabled by default)
+
+By default, the template requires mTLS authentication. Configure these in your `terraform.tfvars`:
+
+```hcl
+# Cloudflare account for mTLS certificate management
+cloudflare_account_id = "<your-cloudflare-account-id>"
+
+# mTLS configuration (enabled by default)
+# Set to false to disable mTLS and allow public access
+enable_cloudflare_mtls = true
+
+# Action when mTLS validation fails: block, log, or challenge
+mtls_enforcement_action = "block"
+
+# Name of Cloudflare-managed CA certificate
+cloudflare_client_ca_name = "mtls-client-ca"
+```
+
+**Important:**
+- `enable_cloudflare_mtls = true` is the default. All clients must present valid client certificates.
+- To disable mTLS and allow public access, set `enable_cloudflare_mtls = false`.
+- The Cloudflare-managed CA is generated automatically during `terraform apply`.
+- Retrieve the CA certificate from the Cloudflare dashboard after apply to generate client certificates.
+
+### After Terraform apply
+
+1. Go to **Cloudflare Dashboard** → **SSL/TLS** → **Client Certificates**
+2. Download the Cloudflare-managed CA certificate
+3. Use this CA to sign client certificates for your authorized clients
+4. Test connectivity with `curl` using client certificates
+
+### Troubleshooting tip
+
+If you need to test or troubleshoot mTLS validation, temporarily change `mtls_enforcement_action` from `"block"` to `"log"`. This allows requests without valid certificates but logs validation failures for analysis. Remember to switch back to `"block"` for production.
 
 ## Step 4: Apply Terraform
 
@@ -172,6 +210,8 @@ Confirm that:
 - Cloudflare proxies the public hostname
 - the hostname resolves to the GCP external load balancer path through Cloudflare
 - traffic reaches the sample workload through the multi-cluster Gateway
+- mTLS is enforced (try connecting without a client certificate - should be blocked by default)
+- Valid client certificates can successfully connect
 
 ## What to do next
 

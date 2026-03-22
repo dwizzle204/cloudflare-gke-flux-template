@@ -6,7 +6,7 @@ This repository is a reusable template for running two GKE clusters behind a sin
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, TLS termination)
+  -> Cloudflare (DNS, WAF, TLS termination, mTLS validation)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
@@ -39,11 +39,14 @@ Internet
 
 1. Create the target GitHub repository and commit this template into it.
 2. Replace the required placeholders in `gitops/`.
-3. Prepare Terraform inputs from `terraform/terraform.tfvars.example`.
+3. Prepare Terraform inputs from `terraform/terraform.tfvars.example` including mTLS configuration (enabled by default).
 4. Apply Terraform from `terraform/`.
-5. Bootstrap Flux on Cluster A and Cluster B with standard Flux bootstrap using SSH deploy key authentication.
-6. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
-7. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
+5. Retrieve Cloudflare-managed CA certificate from dashboard after Terraform apply.
+6. Generate and distribute client certificates to authorized clients.
+7. Bootstrap Flux on Cluster A and Cluster B with standard Flux bootstrap using SSH deploy key authentication.
+8. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
+9. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
+10. Verify mTLS is enforced (try connecting without a client certificate - should be blocked by default).
 
 ## Template repository policy
 

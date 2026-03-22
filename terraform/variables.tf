@@ -32,6 +32,42 @@ variable "cloudflare_zone_name" {
   type        = string
 }
 
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID for mTLS certificate management. Replace with your account ID."
+  type        = string
+  default     = "REPLACE_ME_ACCOUNT_ID"
+}
+
+variable "cloudflare_client_ca_name" {
+  description = "Name of Cloudflare-managed CA certificate used for mTLS authentication."
+  type        = string
+  default     = "mtls-client-ca"
+}
+
+variable "cloudflare_client_ca_certificate" {
+  description = "PEM-encoded CA certificate for mTLS validation. For Cloudflare-managed CA, leave as empty string. For custom CA (Enterprise), provide certificate content."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "enable_cloudflare_mtls" {
+  description = "Enable mTLS authentication at Cloudflare edge. Set to false to disable mTLS and allow public access."
+  type        = bool
+  default     = true
+}
+
+variable "mtls_enforcement_action" {
+  description = "Action to take when mTLS validation fails. Options: block (default), log (for troubleshooting), challenge (Enterprise)."
+  type        = string
+  default     = "block"
+
+  validation {
+    condition     = contains(["block", "log", "challenge"], var.mtls_enforcement_action)
+    error_message = "mtls_enforcement_action must be block, log, or challenge."
+  }
+}
+
 variable "gateway_hostname" {
   description = "Hostname bound on the external multi-cluster Gateway listener and HTTPRoute."
   type        = string
