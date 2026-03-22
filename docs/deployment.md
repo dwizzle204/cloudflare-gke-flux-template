@@ -116,7 +116,12 @@ cloudflare_client_ca_name = "mtls-client-ca"
 1. Go to **Cloudflare Dashboard** → **SSL/TLS** → **Client Certificates**
 2. Download the Cloudflare-managed CA certificate
 3. Use this CA to sign client certificates for your authorized clients
-4. Test connectivity with `curl` using client certificates
+4. Configure mTLS enforcement:
+   - Go to **Cloudflare Dashboard** → **Security** → **API Shield** → **mTLS**
+   - Select the hostname (`<your-gateway-hostname>`)
+   - Choose the certificate (`<your-ca-name>`)
+   - Set the enforcement action: **block** (default), **log** (for troubleshooting), or **challenge** (Enterprise)
+5. Test connectivity with `curl` using client certificates
 
 ### Troubleshooting tip
 

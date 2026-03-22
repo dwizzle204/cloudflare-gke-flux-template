@@ -6,12 +6,14 @@ This repository is a reusable template for running two GKE clusters behind a sin
 
 ```text
 Internet
-  -> Cloudflare (DNS, WAF, TLS termination, mTLS validation)
+  -> Cloudflare (DNS, WAF, TLS termination, mTLS validation & enforcement)
   -> Cloudflare Authenticated Origin Pulls
   -> GCP Global External HTTP(S) Load Balancer
   -> GKE Multi-Cluster Gateway (external only)
   -> Services running in Cluster A and Cluster B
 ```
+
+Cloudflare provides **end-to-end mTLS authentication** (enabled by default) to protect your API. Clients must present valid certificates, Cloudflare validates and enforces the requirement based on the configured action, then Cloudflare enables WAF and DDoS inspection for authenticated traffic.
 
 ## What the template builds
 

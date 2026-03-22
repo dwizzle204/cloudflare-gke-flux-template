@@ -93,14 +93,19 @@ openssl req -newkey rsa:4096 -keyout client-key.pem -out client.csr
 curl https://<hostname> --cert client-cert.pem --key client-key.pem
 ```
 
-### Enforcement actions
+### Enforcement configuration
 
-Configure the action taken when mTLS validation fails using the `mtls_enforcement_action` variable:
+**Important:** mTLS enforcement (blocking/logging requests) must be configured in the **Cloudflare Dashboard** under **Security > API Shield > mTLS**. The Terraform provider uploads the certificate, but enforcement action and hostname selection is configured in the Cloudflare UI.
 
-- **block:** Default. Reject requests without valid client certificates.
-- **log:** Allow requests but log validation failures for monitoring and troubleshooting.
-- **challenge:** Present a CAPTCHA challenge to unauthenticated clients (Enterprise feature).
+**Steps to configure enforcement:**
+1. Go to **Cloudflare Dashboard** → **Security** → **API Shield** → **mTLS**
+2. Select the hostname (`<your-gateway-hostname>`)
+3. Choose the certificate uploaded by Terraform (`<your-ca-name>`)
+4. Set the enforcement action:
+   - **block:** Default. Reject requests without valid client certificates.
+   - **log:** Allow requests but log validation failures for monitoring and troubleshooting.
+   - **challenge:** Present a CAPTCHA challenge to unauthenticated clients (Enterprise feature).
 
 ### Disabling mTLS
 
-Set `enable_cloudflare_mtls = false` in your Terraform configuration. The hostname will be accessible to all clients without certificate validation.
+Set `enable_cloudflare_mtls = false` in your Terraform configuration. The hostname will be accessible to all clients without certificate validation. **Note:** You must also disable mTLS enforcement in the Cloudflare Dashboard if you disable it here.

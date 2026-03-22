@@ -52,7 +52,7 @@ variable "cloudflare_client_ca_certificate" {
 }
 
 variable "enable_cloudflare_mtls" {
-  description = "Enable mTLS authentication at Cloudflare edge. Set to false to disable mTLS and allow public access."
+  description = "Enable mTLS authentication at Cloudflare edge. Set to false to disable mTLS and allow public access. Note: Enforcement action (block/log/challenge) must be configured in Cloudflare Dashboard under Security > API Shield > mTLS."
   type        = bool
   default     = true
 }
