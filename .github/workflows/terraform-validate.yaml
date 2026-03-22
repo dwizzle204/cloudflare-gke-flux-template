@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "terraform/**"
+      - "examples/minimal/**"
       - ".github/workflows/terraform-validate.yaml"
 
 permissions:
@@ -36,3 +37,12 @@ jobs:
 
       - name: Terraform validate
         run: terraform validate
+
+      - name: Terraform native tests
+        run: terraform test
+
+      - name: Validate minimal example
+        working-directory: examples/minimal
+        run: |
+          terraform init -backend=false
+          terraform validate

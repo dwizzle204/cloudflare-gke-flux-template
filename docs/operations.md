@@ -2,6 +2,34 @@
 
 Use this page after the initial deployment is complete.
 
+## No-cloud validation stack
+
+Use these checks before you work with real credentials:
+
+```bash
+cd terraform
+terraform init -backend=false
+terraform test
+
+cd examples/minimal
+terraform init -backend=false
+terraform validate
+
+cd terraform/ci
+terraform init -backend=false
+terraform validate
+terraform plan -refresh=false -lock=false -input=false -var-file=../../tests/terratest/testdata/ci.auto.tfvars
+
+cd tests/terratest
+go test -v ./... -count=1 -timeout 30m
+```
+
+Use this stack for three different purposes:
+
+- `terraform test` checks module-level config invariants quickly
+- `examples/minimal` proves a consumer can call the reusable core module
+- `terraform/ci` plus Terratest checks the broader template contract
+
 ## Validate cluster registration
 
 ```bash
