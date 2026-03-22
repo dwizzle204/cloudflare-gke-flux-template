@@ -44,6 +44,16 @@ Internet
 5. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
 6. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
 
+## Template repository policy
+
+This upstream repository is intended to be used as a template.
+
+- Issues are welcome.
+- Forks are welcome.
+- Pull requests are not accepted against the upstream template repository.
+
+If you want to make changes, create your own copy from the template and run the live workflows there.
+
 ## What this template does not do
 
 - no third cluster
