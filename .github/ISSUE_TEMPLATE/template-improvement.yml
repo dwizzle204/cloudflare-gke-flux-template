@@ -1,0 +1,53 @@
+name: Template improvement
+description: Suggest an improvement to the upstream learning template
+title: "improvement: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for improvements to the upstream template itself.
+
+        Pull requests are not accepted against the upstream repository, but issue reports and improvement suggestions are welcome.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What is confusing, missing, or unnecessarily difficult today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed improvement
+      description: Describe the improvement you want to see in the template.
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected files or areas
+      description: Which part of the repo would this likely affect?
+      placeholder: docs/deployment.md, gitops/, terraform/ci, workflows
+
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Why this would help template users
+      description: Explain how the change would reduce confusion or improve the template.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I understand this repository is maintained as a template, not a general contribution target.
+          required: true
+        - label: I would use my own copy or fork for implementation changes.
+          required: true

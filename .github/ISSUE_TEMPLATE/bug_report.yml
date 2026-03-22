@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a bug in the template itself
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for bugs in the upstream template itself.
+
+        If the issue is specific to your own fork or generated copy, include that context clearly.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the bug briefly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Which file, workflow, or doc page appears to be wrong?
+      placeholder: README.md, terraform/cloudflare.tf, .github/workflows/gitops-validate.yaml
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Provide the exact steps that reproduce the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Validation output
+      description: Paste any relevant command output such as terraform validate, terraform test, go test, flux migrate, kustomize build, or mkdocs build.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I reviewed the existing docs before opening this issue.
+          required: true
+        - label: This issue is about the upstream template, not only my own local changes.
+          required: true

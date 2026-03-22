@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Template setup documentation
+    url: https://github.com/dwizzle204/cloudflare-gke-flux-template/blob/master/docs/index.md
+    about: Start here if you need the deployment order, customization steps, or validation commands.
+  - name: Use your own copy of the template
+    url: https://github.com/dwizzle204/cloudflare-gke-flux-template/generate
+    about: Create your own repository from the template if you want to modify or deploy it.
