@@ -12,12 +12,12 @@ Terraform provisions:
 - fleet ingress feature with Cluster A as the config cluster
 - one global static IP for the external Gateway
 - a Cloudflare proxied DNS record
-- Flux Operator on both clusters
-- one FluxInstance per cluster
+- standard Flux bootstrap on both clusters
+- one `GitRepository` and one `Kustomization` in `flux-system` on each cluster
 
 ## 2. Flux takes over Kubernetes resources
 
-After bootstrap, each FluxInstance reconciles its cluster-specific path under `gitops/clusters/*`.
+After bootstrap, the standard Flux `Kustomization` in `flux-system` reconciles each cluster-specific path under `gitops/clusters/*`.
 
 ### Cluster A syncs
 - namespace

@@ -12,7 +12,7 @@ This example shows the smallest practical consumer of `terraform/modules/core`.
 
 - live GCP resource creation
 - Cloudflare behavior
-- Flux Operator runtime behavior
+- Flux bootstrap runtime behavior
 - end-to-end Gateway routing
 
 ## Run it
@@ -25,6 +25,6 @@ terraform validate
 
 ## Why it targets `terraform/modules/core`
 
-The live Terraform root includes Cloudflare, Flux Operator installation, certificate resources, and provider wiring to live clusters. That makes it the wrong surface for a small no-cloud example.
+The live Terraform root includes Cloudflare, certificate resources, and the inputs needed for standard Flux bootstrap. That makes it the wrong surface for a small no-cloud example.
 
 This example targets the reusable GCP infrastructure module only.

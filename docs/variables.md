@@ -38,10 +38,9 @@ Use `terraform/terraform.tfvars.example` as the starting point.
 - `git_repository_owner`: GitHub owner or organization
 - `git_repository_name`: GitHub repository name
 - `git_branch`: Git branch for Flux reconciliation
-- `github_token`: token used to create the Flux sync secret on both clusters
+
+Use `template-customization.md` for the SSH deploy key and placeholder rendering flow used by standard Flux bootstrap.
 
 ## Gateway
 
 - `gateway_hostname`: hostname configured on the Gateway and HTTPRoute
-
-Use `template-customization.md` for the replacement checklist and the placeholder rendering flow.

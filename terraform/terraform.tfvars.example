@@ -8,8 +8,3 @@ gateway_hostname      = "api.example.com"
 cloudflare_hostname   = "api.example.com"
 cloudflare_zone_name  = "example.com"
 cloudflare_api_token  = "replace-me"
-
-git_repository_owner = "replace-me"
-git_repository_name  = "replace-me"
-git_branch           = "main"
-github_token         = "replace-me"

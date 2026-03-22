@@ -19,7 +19,6 @@ Prepare real values for:
 Provide secure values for:
 
 - `cloudflare_api_token`
-- `github_token`
 
 ## Step 2: Replace GitOps placeholders
 
@@ -31,14 +30,14 @@ Expected placeholders:
 - `REPLACE_ME_GATEWAY_HOSTNAME`
 - `REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME`
 - `REPLACE_ME_GIT_BRANCH`
-- `https://github.com/REPLACE_ME/REPLACE_ME`
+- `ssh://git@github.com/REPLACE_ME/REPLACE_ME`
 
 These appear in:
 
 - `gitops/infrastructure/gateway/gateway.yaml`
 - `gitops/infrastructure/gateway/httproute.yaml`
-- `gitops/clusters/cluster-a/apps-sample.yaml`
-- `gitops/clusters/cluster-b/apps-sample.yaml`
+- `gitops/clusters/cluster-a/flux-system/gotk-sync.yaml`
+- `gitops/clusters/cluster-b/flux-system/gotk-sync.yaml`
 
 ## Step 3: Render placeholders
 
@@ -49,7 +48,7 @@ export GATEWAY_STATIC_IP_NAME="your-reserved-ip-name"
 export GATEWAY_HOSTNAME="api.your-domain.example"
 export GATEWAY_CERTIFICATE_MAP_NAME="your-gateway-cert-map"
 export GIT_BRANCH="main"
-export GIT_REPOSITORY_URL="https://github.com/your-org/your-repo"
+export GIT_REPOSITORY_SSH_URL="ssh://git@github.com/your-org/your-repo"
 python3 scripts/render-placeholders.py
 ```
 
@@ -57,7 +56,13 @@ Expected result:
 
 - the GitOps manifests point at your real repository, branch, hostname, static IP name, and certificate map name
 
-## Step 4: Configure apply workflow secrets
+## Step 4: Prepare the SSH deploy key
+
+Before running Flux bootstrap, create a read-only deploy key on the target GitHub repository.
+
+Use the same repository SSH URL and branch that you rendered into the bootstrap placeholders.
+
+## Step 5: Configure apply workflow secrets
 
 If you use the built-in apply workflow, configure these GitHub Actions secrets:
 
@@ -67,7 +72,7 @@ If you use the built-in apply workflow, configure these GitHub Actions secrets:
 
 `TERRAFORM_TFVARS` should contain the full live tfvars content for the environment.
 
-## Step 5: Validate before apply
+## Step 6: Validate before apply
 
 Run:
 

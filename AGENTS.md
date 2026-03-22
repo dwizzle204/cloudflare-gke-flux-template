@@ -123,7 +123,7 @@ mkdocs build --strict
 - Every variable and output must include `description`.
 - Mark tokens and credentials as `sensitive = true`.
 - Prefer pinned upstream modules over handwritten abstractions when they fit the architecture.
-- Keep Flux Operator, Cloudflare, Certificate Manager, and provider-wiring edges explicit when modules do not improve clarity.
+- Keep standard Flux bootstrap, Cloudflare, Certificate Manager, and provider-wiring edges explicit when modules do not improve clarity.
 
 ## GitOps Guidance
 
@@ -142,8 +142,8 @@ mkdocs build --strict
 
 ## Files To Treat Carefully
 
-- `terraform/providers.tf` wires live cluster access from Terraform outputs.
-- `terraform/flux.tf`, `terraform/cloudflare.tf`, and `terraform/certificates.tf` define the live edge/bootstrap model.
+- `terraform/cloudflare.tf` and `terraform/certificates.tf` define the live edge model.
+- `gitops/clusters/*/flux-system/*` define the standard Flux bootstrap model.
 - `examples/minimal/*` should stay a minimal no-cloud consumer of `terraform/modules/core` only.
 - `gitops/infrastructure/gateway/*` controls the external ingress path.
 - `tests/terratest/testdata/ci.auto.tfvars` must remain fake but syntactically valid.
@@ -165,6 +165,6 @@ mkdocs build --strict
 
 ## Known Constraints
 
-- The live Terraform root still depends on real credentials and cluster/provider access.
+- The live Terraform root still depends on real cloud credentials, but no longer bootstraps Flux through Terraform-managed cluster providers.
 - The CI-safe Terraform root is the default path for contract-style validation.
 - Multi-cluster Gateway behavior, Cloudflare DNS propagation, and Flux reconciliation still require live environment validation.

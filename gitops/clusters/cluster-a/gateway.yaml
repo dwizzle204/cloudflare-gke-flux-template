@@ -13,5 +13,5 @@ spec:
     - name: sample-app
   sourceRef:
     kind: GitRepository
-    name: platform-repo
+    name: flux-system
   path: ./gitops/infrastructure/gateway

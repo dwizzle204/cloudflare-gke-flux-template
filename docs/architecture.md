@@ -42,6 +42,6 @@ Internet
 
 ## Ownership boundary
 
-- Terraform owns infrastructure and declarative Flux Operator bootstrap primitives on both clusters.
-- Flux owns Kubernetes manifests after the operator installs controllers and sync resources.
+- Terraform owns infrastructure only.
+- Flux owns Kubernetes manifests after standard bootstrap installs controllers and sync resources on each cluster.
 - Both clusters reconcile from Git. Only Cluster A carries the Gateway layer.

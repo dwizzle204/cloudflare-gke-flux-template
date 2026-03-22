@@ -79,15 +79,43 @@ Terraform will:
 - create the GCP network and clusters
 - configure the Cloudflare edge
 - create the certificate resources for the HTTPS origin path
-- install Flux Operator on both clusters
-- create one `FluxInstance` per cluster
+- leave both clusters ready for standard Flux bootstrap
+
+## Step 5: Bootstrap Flux on both clusters
+
+Use standard Flux bootstrap with SSH deploy key authentication.
+
+Create a read-only deploy key in the target GitHub repository, then run the bootstrap command once per cluster context.
+
+Cluster A:
+
+```bash
+flux bootstrap git \
+  --url=ssh://git@github.com/<owner>/<repo> \
+  --branch=<branch> \
+  --path=gitops/clusters/cluster-a \
+  --private-key-file=<path-to-private-key> \
+  --components=source-controller,kustomize-controller,helm-controller
+```
+
+Cluster B:
+
+```bash
+flux bootstrap git \
+  --url=ssh://git@github.com/<owner>/<repo> \
+  --branch=<branch> \
+  --path=gitops/clusters/cluster-b \
+  --private-key-file=<path-to-private-key> \
+  --components=source-controller,kustomize-controller,helm-controller
+```
 
 Expected result:
 
+- Flux is installed in `flux-system` on both clusters
 - Cluster A syncs `gitops/clusters/cluster-a`
 - Cluster B syncs `gitops/clusters/cluster-b`
 
-## Step 5: Verify Flux bootstrap
+## Step 6: Verify Flux bootstrap
 
 Fetch cluster credentials first:
 
@@ -96,18 +124,18 @@ gcloud container clusters get-credentials <cluster-a-name> --region <region-a> -
 gcloud container clusters get-credentials <cluster-b-name> --region <region-b> --project <project-id>
 ```
 
-Then verify the FluxInstance objects:
+Then verify the standard Flux resources:
 
 ```bash
-kubectl --context <cluster-a-context> -n flux-system get fluxinstance flux
-kubectl --context <cluster-b-context> -n flux-system get fluxinstance flux
+kubectl --context <cluster-a-context> -n flux-system get gitrepositories,kustomizations
+kubectl --context <cluster-b-context> -n flux-system get gitrepositories,kustomizations
 ```
 
 Expected result:
 
-- both clusters report a `flux` FluxInstance in `flux-system`
+- both clusters report a `GitRepository` and `Kustomization` in `flux-system`
 
-## Step 6: Verify GitOps reconciliation
+## Step 7: Verify GitOps reconciliation
 
 Check that:
 
@@ -116,7 +144,7 @@ Check that:
 - Gateway and HTTPRoute exist only on Cluster A
 - `ServiceExport` exists in both clusters
 
-## Step 7: Verify ingress
+## Step 8: Verify ingress
 
 Confirm that:
 

@@ -11,13 +11,12 @@ This directory contains the infrastructure layer.
 - enable MCS
 - enable fleet ingress and point it at Cluster A as the config cluster
 - reserve one global static IP for the external Gateway
-- install Flux Operator on both clusters
-- create one FluxInstance on each cluster
+- leave both clusters ready for standard Flux bootstrap
 - create a Cloudflare proxied DNS record and enable Authenticated Origin Pulls
 
 ## Important
 
-The repo you apply from must already exist in GitHub. Terraform installs Flux Operator and creates one FluxInstance per cluster so both clusters reconcile declaratively from this repository.
+The repo you apply from must already exist in GitHub. Terraform prepares the infrastructure, while Flux is bootstrapped afterward with the standard Flux CLI flow on each cluster.
 
 ## Suggested workflow
 
@@ -25,4 +24,5 @@ The repo you apply from must already exist in GitHub. Terraform installs Flux Op
 2. run `terraform plan`
 3. review
 4. run `terraform apply`
-5. verify both FluxInstance resources reconcile their cluster-specific Git paths
+5. bootstrap each cluster with `flux bootstrap git` using SSH deploy key auth
+6. verify both clusters reconcile their cluster-specific Git paths
