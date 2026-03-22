@@ -25,13 +25,13 @@ For GitHub Actions, provide it through `TERRAFORM_TFVARS` or your own secret inj
 
 ## Flux Git authentication
 
-The template uses an HTTPS Git credential secret for Flux sync.
+The template uses SSH deploy key authentication for Flux sync.
 
-Required value:
+Recommended model:
 
-- `github_token`
-
-That token is written into the sync secret consumed by each `FluxInstance`.
+- create a read-only SSH deploy key in the target GitHub repository
+- use that key with `flux bootstrap git`
+- let Flux create the in-cluster `flux-system` authentication secret during bootstrap
 
 ## Apply workflow secrets
 
@@ -49,4 +49,4 @@ The built-in `terraform-apply` workflow expects:
 - do not commit API tokens or Git tokens
 - prefer OIDC over static GCP credentials
 - scope the Cloudflare token to zone/settings/DNS permissions only
-- scope the Git token to the minimum repository access Flux needs
+- keep deploy key material out of the repository itself

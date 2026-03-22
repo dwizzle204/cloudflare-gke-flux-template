@@ -8,7 +8,7 @@ replacements = {
     "REPLACE_ME_GATEWAY_HOSTNAME": os.environ.get("GATEWAY_HOSTNAME", ""),
     "REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME": os.environ.get("GATEWAY_CERTIFICATE_MAP_NAME", ""),
     "REPLACE_ME_GIT_BRANCH": os.environ.get("GIT_BRANCH", ""),
-    "https://github.com/REPLACE_ME/REPLACE_ME": os.environ.get("GIT_REPOSITORY_URL", ""),
+    "ssh://git@github.com/REPLACE_ME/REPLACE_ME": os.environ.get("GIT_REPOSITORY_SSH_URL", ""),
 }
 
 for file in root.rglob("*.yaml"):

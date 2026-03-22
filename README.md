@@ -22,7 +22,7 @@ Internet
   - Cluster B: workload cluster
 - Fleet membership, Multi-Cluster Services, and multi-cluster Gateway prerequisites
 - one global static IP for the external load balancer
-- Flux Operator and one `FluxInstance` per cluster
+- standard Flux bootstrap on both clusters
 - GitOps-managed Gateway, HTTPRoute, workloads, and `ServiceExport`
 
 ## Read the docs in this order
@@ -41,8 +41,9 @@ Internet
 2. Replace the required placeholders in `gitops/`.
 3. Prepare Terraform inputs from `terraform/terraform.tfvars.example`.
 4. Apply Terraform from `terraform/`.
-5. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
-6. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
+5. Bootstrap Flux on Cluster A and Cluster B with standard Flux bootstrap using SSH deploy key authentication.
+6. Confirm both clusters reconcile their own `gitops/clusters/<cluster-name>` path.
+7. Verify the public hostname resolves through Cloudflare to the GCP external load balancer.
 
 ## Template repository policy
 
@@ -61,6 +62,14 @@ If you want to make changes, create your own copy from the template and run the 
 - no alternate ingress controller such as NGINX or Istio
 - no Cloudflare tunnels
 - no Terraform-managed workloads after Flux bootstrap
+
+## Template repository note
+
+This template keeps Flux bootstrap simple and recognizable.
+
+- Terraform provisions infrastructure only.
+- Flux is bootstrapped afterward with standard `flux bootstrap git` commands.
+- Both clusters use SSH deploy key authentication for Git sync.
 
 ## Validation
 

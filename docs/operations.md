@@ -79,7 +79,12 @@ Use Terraform for:
 - cluster lifecycle
 - static IP
 - Cloudflare DNS and edge settings
-- Flux Operator and FluxInstance bootstrap primitives
+- infrastructure needed before standard Flux bootstrap
+
+Use standard Flux bootstrap for:
+
+- installing controllers into `flux-system`
+- creating the cluster Git source and sync objects
 
 Use GitOps for:
 

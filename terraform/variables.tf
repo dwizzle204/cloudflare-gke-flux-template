@@ -67,28 +67,6 @@ variable "gateway_certificate_map_entry_name" {
   default     = "gateway-cert-entry"
 }
 
-variable "git_branch" {
-  description = "Git branch that Flux should reconcile from."
-  type        = string
-  default     = "main"
-}
-
-variable "git_repository_name" {
-  description = "GitHub repository name that stores the gitops manifests."
-  type        = string
-}
-
-variable "git_repository_owner" {
-  description = "GitHub repository owner or organization that stores the gitops manifests."
-  type        = string
-}
-
-variable "github_token" {
-  description = "GitHub token used to create the Flux sync secret on both clusters."
-  type        = string
-  sensitive   = true
-}
-
 variable "machine_type" {
   description = "Machine type used by the default node pool in both clusters."
   type        = string

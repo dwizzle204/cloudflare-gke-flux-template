@@ -39,18 +39,20 @@ It does not own Gateway resources.
 
 ## Flux bootstrap model
 
-Both clusters run Flux through Flux Operator.
+Both clusters use the standard Flux bootstrap layout under `flux-system`.
 
 Each cluster has:
 
-- one `FluxInstance` named `flux`
-- namespace `flux-system`
-- Git source pointing at this repository
+- `gotk-components.yaml`
+- `gotk-sync.yaml`
+- `kustomization.yaml`
 
-The only difference is the sync path:
+The bootstrap sync path differs by cluster:
 
 - Cluster A -> `gitops/clusters/cluster-a`
 - Cluster B -> `gitops/clusters/cluster-b`
+
+The Git source uses SSH and expects a deploy key secret named `flux-system` in the `flux-system` namespace.
 
 ## Why this split matters
 

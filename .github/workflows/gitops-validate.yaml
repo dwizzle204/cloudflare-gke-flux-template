@@ -61,11 +61,17 @@ jobs:
 
       - name: Validate Flux entrypoint manifests
         run: |
-          grep -q 'kind: GitRepository' gitops/clusters/cluster-a/apps-sample.yaml
           grep -q 'kind: Kustomization' gitops/clusters/cluster-a/apps-sample.yaml
-          grep -q 'kind: GitRepository' gitops/clusters/cluster-b/apps-sample.yaml
           grep -q 'kind: Kustomization' gitops/clusters/cluster-b/apps-sample.yaml
           grep -q 'kind: Kustomization' gitops/clusters/cluster-a/gateway.yaml
+          grep -q 'kind: GitRepository' gitops/clusters/cluster-a/flux-system/gotk-sync.yaml
+          grep -q 'kind: GitRepository' gitops/clusters/cluster-b/flux-system/gotk-sync.yaml
+          grep -q 'secretRef:' gitops/clusters/cluster-a/flux-system/gotk-sync.yaml
+          grep -q 'secretRef:' gitops/clusters/cluster-b/flux-system/gotk-sync.yaml
+          test -f gitops/clusters/cluster-a/flux-system/gotk-components.yaml
+          test -f gitops/clusters/cluster-b/flux-system/gotk-components.yaml
+          test -f gitops/clusters/cluster-a/flux-system/kustomization.yaml
+          test -f gitops/clusters/cluster-b/flux-system/kustomization.yaml
 
       - name: Client dry-run native workload manifests
         run: |

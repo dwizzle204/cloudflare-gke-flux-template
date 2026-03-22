@@ -15,12 +15,12 @@ EXPECTED = {
     Path("gitops/infrastructure/gateway/httproute.yaml"): [
         "REPLACE_ME_GATEWAY_HOSTNAME",
     ],
-    Path("gitops/clusters/cluster-a/apps-sample.yaml"): [
-        "https://github.com/REPLACE_ME/REPLACE_ME",
+    Path("gitops/clusters/cluster-a/flux-system/gotk-sync.yaml"): [
+        "ssh://git@github.com/REPLACE_ME/REPLACE_ME",
         "REPLACE_ME_GIT_BRANCH",
     ],
-    Path("gitops/clusters/cluster-b/apps-sample.yaml"): [
-        "https://github.com/REPLACE_ME/REPLACE_ME",
+    Path("gitops/clusters/cluster-b/flux-system/gotk-sync.yaml"): [
+        "ssh://git@github.com/REPLACE_ME/REPLACE_ME",
         "REPLACE_ME_GIT_BRANCH",
     ],
 }
@@ -38,7 +38,7 @@ for path in ROOT.rglob("*.yaml"):
         "REPLACE_ME_GATEWAY_HOSTNAME",
         "REPLACE_ME_GATEWAY_CERTIFICATE_MAP_NAME",
         "REPLACE_ME_GIT_BRANCH",
-        "https://github.com/REPLACE_ME/REPLACE_ME",
+        "ssh://git@github.com/REPLACE_ME/REPLACE_ME",
     ]:
         if token in text:
             found.append((rel, token))

@@ -1,16 +1,3 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: platform-repo
-  namespace: flux-system
-spec:
-  interval: 1m
-  timeout: 1m
-  ref:
-    branch: REPLACE_ME_GIT_BRANCH
-  url: https://github.com/REPLACE_ME/REPLACE_ME
-
----
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -24,5 +11,5 @@ spec:
   wait: true
   sourceRef:
     kind: GitRepository
-    name: platform-repo
+    name: flux-system
   path: ./gitops/apps/sample-app/overlays/cluster-b
