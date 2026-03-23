@@ -30,12 +30,13 @@ Cloudflare can optionally provide edge mTLS for client certificate authenticatio
 ## Read docs in this order
 
 1. `docs/index.md`
-2. `docs/deployment.md`
-3. `docs/template-customization.md`
-4. `docs/secrets-auth.md`
-5. `docs/cloudflare.md`
-6. `docs/gitops.md`
-7. `docs/operations.md`
+2. `docs/how-to-use-this-repo.md`
+3. `docs/deployment.md`
+4. `docs/template-customization.md`
+5. `docs/secrets-auth.md`
+6. `docs/cloudflare.md`
+7. `docs/gitops.md`
+8. `docs/operations.md`
 
 ## Quick start
 
